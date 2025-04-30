@@ -25,8 +25,8 @@ public class FightScene {
 
         public GamePanel() { //โหลดรูปเข้า พร้อมปรับขนาด
             try {
-                playerImage = new ImageIcon("D:\\KMUTT\\1stYear_2024\\Term2\\CPE112\\Final Proj\\1RealOne\\Pics\\character.png").getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-                botImage = new ImageIcon("D:\\KMUTT\\1stYear_2024\\Term2\\CPE112\\Final Proj\\1RealOne\\Pics\\tungtungsahur.png").getImage().getScaledInstance(640 , 360, Image.SCALE_SMOOTH); 
+                playerImage = new ImageIcon("character.png").getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+                botImage = new ImageIcon("tungtungsahur.png").getImage().getScaledInstance(640 , 360, Image.SCALE_SMOOTH); 
             } catch (Exception e) { 
                 JOptionPane.showMessageDialog(null, "Error loading images: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
