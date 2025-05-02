@@ -21,9 +21,9 @@ class NodeInfo {
         }
     }
 
-    public char typeNode;                        // ประเภทของห้อง node (S'=Start, 'E'=End, 'M'=Monster)
-    public java.util.List<Neighbor> neighbors;   // รายชื่อ node ที่เชื่อมต่ออยู่
-    public String nameMonster;                   // ชื่อมอนสเตอร์ในห้อว (ถ้ามี)
+    public char typeNode;                   // ประเภทของห้อง node (S'=Start, 'E'=End, 'M'=Monster)
+    public List<Neighbor> neighbors;        // รายชื่อ node ที่เชื่อมอยู่
+    public String nameMonster;              // ชื่อมอนสเตอร์ในห้อว (ถ้ามี)
 
     public NodeInfo(char typeNode) {
         this.typeNode = typeNode;
@@ -103,8 +103,8 @@ class Dijkstra {
     }
 
     // คืนเส้นทางจากจุดเริ่มต้นไปยังปลายทาง
-    public java.util.List<Character> getPath(char dest) {
-        java.util.List<Character> path = new ArrayList<>();
+    public List<Character> getPath(char dest) {
+        List<Character> path = new ArrayList<>();
         for (Character at = dest; at != null; at = shortestPath.get(at).previous) {
             path.add(at);
         }
@@ -167,7 +167,7 @@ public class MyGraph {
 
     // คืนลิสต์ของ node ที่เป็นห้องมอนสเตอร์ (type == 'M')
     public List<Character> findMonsterNode() {
-        java.util.List<Character> monsterRoom = new ArrayList<>();
+        List<Character> monsterRoom = new ArrayList<>();
         for (Map.Entry<Character, NodeInfo> entry : graph.adjL.entrySet()) {
             if (entry.getValue().typeNode == 'M') {
                 monsterRoom.add(entry.getKey());
@@ -225,11 +225,11 @@ public class MyGraph {
 //     Map<Character, NodeInfo> graph;
 //     Map<Character, Point> nodePositions;
 //     Map<Character, Image> nodeImages;
-//     java.util.List<Character> path;
+//     List<Character> path;
 //     char selected = '-';
 //     final int ICON_SIZE = 40;
 
-//     public GraphPanel(Map<Character, NodeInfo> graph, java.util.List<Character> path) {
+//     public GraphPanel(Map<Character, NodeInfo> graph, List<Character> path) {
 //         this.graph = graph;
 //         this.path = path;
 //         this.nodePositions = new HashMap<>();
@@ -327,7 +327,7 @@ public class MyGraph {
 //         // คำนวณ Dijkstra
 //         Dijkstra dj = new Dijkstra();
 //         dj.compute(graph.adjL, 'A');
-//         java.util.List<Character> path = dj.getPath('D');
+//         List<Character> path = dj.getPath('D');
 
 //         // สร้าง GUI
 //         JFrame frame = new JFrame("Graph Visualizer with Dijkstra");
