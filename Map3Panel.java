@@ -4,46 +4,57 @@ import java.awt.event.*;
 import java.util.*;
 
 public class Map3Panel extends JPanel {
-    private Map<Character, NodeInfo> graph;
-    private Map<Character, Point> nodePositions;
-    private Map<Character, Image> nodeImages;
-    private CharacterStatus playerStatus;
+    Map<Character, NodeInfo> graph;
+    Map<Character, Point> nodePositions;
+    Map<Character, Image> nodeImages;
+    java.util.List<Character> path;
+    char selected = '-';
+    char currentNode = 'A';
+    final int ICON_SIZE = 40;
     private RunGame runGame;
     private Image characterImage;
-    private char currentNode = 'A';
-    private char selected = '-';
-    private final int ICON_SIZE = 40;
+    private Set<Character> defeatedNodes = new HashSet<>();
+    private CharacterStatus playerStatus;
+    private ScoreCalculator scoreCalculator;
 
-    public Map3Panel(Map<Character, NodeInfo> graph, RunGame runGame, CharacterStatus status) {
+    public  Map3Panel(Map<Character, NodeInfo> graph, java.util.List<Character> path, RunGame runGame, CharacterStatus status, ScoreCalculator scoreCalculator) {
         this.graph = graph;
+        this.path = path;
         this.runGame = runGame;
-        this.playerStatus = status;
         this.nodePositions = new HashMap<>();
         this.nodeImages = new HashMap<>();
+        this.playerStatus = status;
+        this.scoreCalculator = scoreCalculator;
 
         int offsetX = 200, offsetY = 100;
+        // nodePositions.put('A', new Point(120 + offsetX, 100 + offsetY));
         nodePositions.put('A', new Point(120 + offsetX, 540 - offsetY));
-        nodePositions.put('B', new Point(380 + offsetX, 500 - offsetY));
-        nodePositions.put('C', new Point(380 + offsetX, 700 - offsetY));
-        nodePositions.put('D', new Point(240 + offsetX, 270 - offsetY));
-        nodePositions.put('E', new Point(600 + offsetX, 270 - offsetY));
-        nodePositions.put('F', new Point(600 + offsetX, 600 - offsetY));
-        nodePositions.put('G', new Point(600 + offsetX, 950 - offsetY));
-        nodePositions.put('H', new Point(800 + offsetX, 500 - offsetY));
-        nodePositions.put('I', new Point(800 + offsetX, 850 - offsetY));
-        nodePositions.put('J', new Point(960 + offsetX, 270 - offsetY));
-        nodePositions.put('K', new Point(960 + offsetX, 570 - offsetY));
-        nodePositions.put('L', new Point(1250 + offsetX, 300 - offsetY));
-        nodePositions.put('M', new Point(1500 + offsetX, 570 - offsetY));
-        nodePositions.put('N', new Point(1250 + offsetX, 900 - offsetY));
-        nodePositions.put('O', new Point(960 + offsetX, 950 - offsetY)); //จุด end
-
-        // โหลดรูปภาพ node ถ้ามี
+        nodePositions.put('B', new Point(360 + offsetX, 500 - offsetY));
+        nodePositions.put('C', new Point(360 + offsetX, 700 - offsetY));
+        nodePositions.put('D', new Point(480 + offsetX, 500 - offsetY));
+        nodePositions.put('E', new Point(480 + offsetX, 650 - offsetY));
+        nodePositions.put('F', new Point(480 + offsetX, 900 - offsetY));
+        nodePositions.put('G', new Point(600 + offsetX, 300 - offsetY));
+        nodePositions.put('H', new Point(720 + offsetX, 300 - offsetY));
+        nodePositions.put('I', new Point(720 + offsetX, 520 - offsetY));
+        nodePositions.put('J', new Point(720 + offsetX, 700 - offsetY));
+        nodePositions.put('K', new Point(720 + offsetX, 930 - offsetY));
+        nodePositions.put('L', new Point(840 + offsetX, 520 - offsetY));
+        nodePositions.put('M', new Point(840 + offsetX, 650 - offsetY));
+        nodePositions.put('N', new Point(840 + offsetX, 900 - offsetY));
+        nodePositions.put('O', new Point(1080 + offsetX, 400 - offsetY));
+        nodePositions.put('P', new Point(1200 + offsetX, 250 - offsetY));
+        nodePositions.put('Q', new Point(860 + offsetX, 250 - offsetY));
+        nodePositions.put('R', new Point(1080 + offsetX, 700 - offsetY));
+        nodePositions.put('T', new Point(1200 + offsetX, 900 - offsetY));
+        nodePositions.put('U', new Point(1200 + offsetX, 500 - offsetY));
+        nodePositions.put('V', new Point(360 + offsetX, 300 - offsetY));
+        
         loadImage('A', "PicsTemp\\A.png");
         loadImage('B', "PicsTemp\\B.png");
         loadImage('C', "PicsTemp\\C.png");
         loadImage('D', "PicsTemp\\D.png");
-        loadImage('E', "PicsTemp\\R.png");
+        loadImage('E', "PicsTemp\\E.png");
         loadImage('F', "PicsTemp\\F.png");
         loadImage('G', "PicsTemp\\G.png");
         loadImage('H', "PicsTemp\\H.png");
@@ -53,16 +64,21 @@ public class Map3Panel extends JPanel {
         loadImage('L', "PicsTemp\\L.png");
         loadImage('M', "PicsTemp\\M.png");
         loadImage('N', "PicsTemp\\N.png");
-        loadImage('O', "PicsTemp\\O.png");
+        loadImage('O', "PicsTemp\\\\O.png");
+        loadImage('P', "PicsTemp\\\\P.png");
+        loadImage('Q', "PicsTemp\\\\Q.png");
+        loadImage('R', "PicsTemp\\\\R.png");
+        loadImage('S', "PicsTemp\\\\S.png");
+        loadImage('U', "PicsTemp\\\\U.png");
+        loadImage('V', "PicsTemp\\\\V.png");
+        loadImage('T', "PicsTemp\\\\boss.png");
 
-        // โหลดตัวละคร
         try {
             characterImage = new ImageIcon("PicsTemp\\Character.png").getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         } catch (Exception e) {
             System.err.println("Error loading character image: " + e.getMessage());
         }
 
-        // คลิกเพื่อเคลื่อนที่
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -77,20 +93,31 @@ public class Map3Panel extends JPanel {
                         boolean isNeighbor = current.neighbors.stream().anyMatch(n -> n.nameNeighbor == clickedNode);
                         if (isNeighbor) {
                             Optional<NodeInfo.Neighbor> edge = current.neighbors.stream().filter(n -> n.nameNeighbor == clickedNode).findFirst();
-                            int cost = edge.map(n -> n.weight).orElse(1);
+                            int cost = edge.map(neighbor -> neighbor.weight).orElse(1);
                             if (playerStatus.getMp() < cost) {
-                                JOptionPane.showMessageDialog(Map3Panel.this, "Not enough MP!");
+                                JOptionPane.showMessageDialog( Map3Panel.this, "Not enough MP to move!");
                                 return;
                             }
                             playerStatus.loseMP(cost);
                             currentNode = clickedNode;
                             selected = clickedNode;
 
-                            if (clickedNode == 'O') {
-                                JOptionPane.showMessageDialog(Map3Panel.this, "Stage 3 Complete!");
-                                SwingUtilities.invokeLater(() -> runGame.showBossMap()); // เปลี่ยนไปแมพบอส
+                            scoreCalculator.addMoveCost(cost); // บันทึก cost ที่เดิน
+
+                            NodeInfo clicked = graph.get(clickedNode);
+                            if (clicked.typeNode == 'M' && !defeatedNodes.contains(clickedNode)) {
+                                JOptionPane.showMessageDialog( Map3Panel.this, "Entering battle at " + clickedNode);
+                                runGame.showFight(clickedNode);
+                            } 
+                            else if (clicked.typeNode == 'E' && !defeatedNodes.contains(clickedNode)) {
+                                JOptionPane.showMessageDialog(Map3Panel.this, "You have entered the BOSS ROOM!");
+                                runGame.showBossFight(clickedNode);
                             }
-                            
+                            else if (clicked.typeNode == 'N' && !defeatedNodes.contains(clickedNode)) {
+                                JOptionPane.showMessageDialog(Map3Panel.this, "Entering battle at " + clickedNode);
+                                runGame.showFight(clickedNode);
+                            }
+  
                             repaint();
                         }
                         break;
@@ -112,60 +139,91 @@ public class Map3Panel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.setColor(Color.BLACK);
+        g.drawString(scoreCalculator.getScoreDisplay(), 20, 70);
 
-        // วาดเส้น
         for (Map.Entry<Character, NodeInfo> entry : graph.entrySet()) {
-            Point p1 = nodePositions.get(entry.getKey());
+            char from = entry.getKey();
+            Point p1 = nodePositions.get(from);
+            if (p1 == null) continue;
             for (NodeInfo.Neighbor n : entry.getValue().neighbors) {
                 Point p2 = nodePositions.get(n.nameNeighbor);
-                if (p1 != null && p2 != null) {
-                    g.drawLine(p1.x, p1.y, p2.x, p2.y);
-        
-                    //น้ำหนักเส้น
-                    int midX = (p1.x + p2.x) / 2;
-                    int midY = (p1.y + p2.y) / 2;
-                    g.setColor(Color.BLUE);
-                    g.setFont(new Font("Arial", Font.BOLD, 14));
-                    g.drawString(String.valueOf(n.weight), midX, midY - 5);
-                    g.setColor(Color.BLACK); //กลับเป็นสีเดิม
-                }
+                if (p2 == null) continue;
+                g.drawLine(p1.x, p1.y, p2.x, p2.y);
+                int midX = (p1.x + p2.x) / 2;
+                int midY = (p1.y + p2.y) / 2;
+                g.setColor(Color.MAGENTA);
+                g.setFont(new Font("Arial", Font.BOLD, 14));
+                g.drawString(String.valueOf(n.weight), midX, midY - 5);
+                g.setColor(Color.BLACK);
             }
         }
-        
 
-        // วาดโหนด
         for (Map.Entry<Character, Point> entry : nodePositions.entrySet()) {
             char name = entry.getKey();
             Point p = entry.getValue();
             Image img = nodeImages.get(name);
             if (img != null) {
                 g.drawImage(img, p.x - ICON_SIZE / 2, p.y - ICON_SIZE / 2, this);
-            } else {
-                g.setColor(Color.LIGHT_GRAY);
-                g.fillOval(p.x - 20, p.y - 20, 40, 40);
-            }
-            if (name == selected) {
-                g.setColor(Color.GREEN);
-                g.drawOval(p.x - 25, p.y - 25, 50, 50);
+                NodeInfo info = graph.get(name);
+                if (info != null) {
+                    switch (info.typeNode) {
+                        case 'N':
+                            g.setColor(Color.RED);
+                            g.drawRect(p.x - ICON_SIZE / 2 - 3, p.y - ICON_SIZE / 2 - 3, ICON_SIZE + 6, ICON_SIZE + 6);
+                            break;
+                        case 'X':
+                            g.setColor(Color.ORANGE);
+                            g.drawRect(p.x - ICON_SIZE / 2 - 3, p.y - ICON_SIZE / 2 - 3, ICON_SIZE + 6, ICON_SIZE + 6);
+                            break;
+                        case '-':
+                            g.setColor(Color.GRAY);
+                            g.drawOval(p.x - ICON_SIZE / 2 - 2, p.y - ICON_SIZE / 2 - 2, ICON_SIZE + 4, ICON_SIZE + 4);
+                            break;
+                    }
+                }
+                if (name == selected) {
+                    g.setColor(Color.GREEN);
+                    g.drawOval(p.x - ICON_SIZE / 2 - 5, p.y - ICON_SIZE / 2 - 5, ICON_SIZE + 10, ICON_SIZE + 10);
+                }
             }
         }
 
         if (characterImage != null) {
-            Point p = nodePositions.get(currentNode);
-            if (p != null) g.drawImage(characterImage, p.x - 25, p.y - 60, this);
+            Point cp = nodePositions.get(currentNode);
+            g.drawImage(characterImage, cp.x - 25, cp.y - 60, this);
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString(scoreCalculator.getScoreDisplay(), 20, 70);
+            g.drawString("Player HP: " + playerStatus.getHp(), 20, 20);
+            g.drawString("Player MP: " + playerStatus.getMp(), 20, 45);
         }
-
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.BOLD, 18));
-        g.drawString("HP: " + playerStatus.getHp(), 20, 30);
-        g.drawString("MP: " + playerStatus.getMp(), 20, 55);
     }
 
-    private Set<Character> defeatedNodes = new HashSet<>();
-
-    public void markDefeated(char node) {
-        defeatedNodes.add(node);
+    public void handlePlayerMove(char nextNode) {
+        currentNode = nextNode;
+    
+        NodeInfo info = graph.get(nextNode);
+        if (info.typeNode == 'M') {
+            runGame.showFight(nextNode);
+        } else if (info.typeNode == 'E') {
+            runGame.showFight(nextNode);
+        }
+    
         repaint();
     }
 
+    public void markDefeated(char node) {
+        defeatedNodes.add(node);
+    
+        // ถ้า node ที่ชนะคือห้องบอส → แสดง end game
+        if (graph.get(node).typeNode == 'X' || graph.get(node).typeNode == 'E') {
+            SwingUtilities.invokeLater(() ->
+                runGame.showEndGame(scoreCalculator.calculateScore(), true)
+            );
+        }
+    
+        repaint();
+    }
+    
 }

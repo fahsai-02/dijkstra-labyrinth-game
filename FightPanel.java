@@ -118,30 +118,31 @@ public class FightPanel extends JPanel {
     private boolean checkGameOver() {
         if (playerStatus.getHp() <= 0 || botHP <= 0) {
             botHP = Math.max(0, botHP); // กันติดลบ
-            String winner = (playerStatus.getHp() > 0) ? "Player Wins!" : "Bot Wins!";
+            boolean isPlayerWin = playerStatus.getHp() > 0;
+            String winner = isPlayerWin ? "Player Wins!" : "Bot Wins!";
             JOptionPane.showMessageDialog(this, winner);
     
-            if (playerStatus.getHp() > 0) {
-                if (parent.getCurrentMap() instanceof BossMap boss) {
-                    boss.markDefeated(currentNode);
+            int finalScore = playerStatus.getHp() + playerStatus.getMp();
     
+            if (isPlayerWin) {
+                if (parent.getCurrentMap() instanceof Map3Panel boss) {
+                    boss.markDefeated(currentNode);
                     if (boss.graph.get(currentNode).typeNode == 'E') {
-                        int finalScore = playerStatus.getHp() + playerStatus.getMp(); 
-                        parent.showEndGame(finalScore);
+                        parent.showEndGame(finalScore, true); //ชนะบอส
                         return true;
                     }
-    
-                } else if (parent.getCurrentMap() instanceof Map3Panel map3) {
-                    map3.markDefeated(currentNode);
+                } else if (parent.getCurrentMap() instanceof Map2Panel map2) {
+                    map2.markDefeated(currentNode);
                 }
+                parent.showMap(); // กลับไปยังแมพหลังจากสู้เสร็จ
+            } else {
+                parent.showEndGame(finalScore, false); //แพ้บอส
             }
     
-            parent.showMap(); //ถ้าไม่เข้าเงื่อนไขบอส ถึงจะกลับแมพ
             return true;
         }
         return false;
     }
-    
     
     
     class GamePanel extends JPanel {
@@ -189,7 +190,3 @@ public class FightPanel extends JPanel {
         }
     }
 }
-
-
-
-

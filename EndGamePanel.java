@@ -1,32 +1,44 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class EndGamePanel extends JPanel {
-    public EndGamePanel(int finalScore, RunGame runGame) {
+    public EndGamePanel(int finalScore, boolean isWin, RunGame runGame) {
         setLayout(new BorderLayout());
 
-        JLabel titleLabel = new JLabel("Congratulations! You have cleared the Boss Room!", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        JLabel messageLabel = new JLabel(
+                isWin ? "You win! Great journey so far. Please, it's time to rest." : "You lose, please restart and try again",
+                SwingConstants.CENTER
+        );
+        messageLabel.setFont(new Font("Serif", Font.BOLD, 28));
+        messageLabel.setForeground(isWin ? Color.BLUE : Color.RED);
 
-        JLabel scoreLabel = new JLabel("Your Final Score: " + finalScore, SwingConstants.CENTER);
-        scoreLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+        JLabel scoreLabel = new JLabel("Final Score: " + finalScore, SwingConstants.CENTER);
+        scoreLabel.setFont(new Font("Serif", Font.BOLD, 24));
 
-        JButton exitButton = new JButton("Exit Game");
-        exitButton.setFont(new Font("Arial", Font.PLAIN, 20));
-        exitButton.addActionListener(e -> System.exit(0));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
 
-        JButton menuButton = new JButton("Back to Menu");
-        menuButton.setFont(new Font("Arial", Font.PLAIN, 20));
-        menuButton.addActionListener(e -> runGame.showMenu());  // ต้องมีเมธอดนี้ใน RunGame
+        JButton menuButton = new JButton("Main Menu");
+        menuButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(EndGamePanel.this, "Menu system not implemented yet.");
+            }
+        });
 
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.add(menuButton);
-        bottomPanel.add(exitButton);
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
 
-        add(titleLabel, BorderLayout.NORTH);
+        buttonPanel.add(menuButton);
+        buttonPanel.add(exitButton);
+
+        add(messageLabel, BorderLayout.NORTH);
         add(scoreLabel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 }
-
-

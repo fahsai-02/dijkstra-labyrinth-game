@@ -10,7 +10,7 @@ import java.util.*;
     ห้องสุดท้าย End = 'E'
  */ 
 
-class NodeInfo {
+ class NodeInfo {
     // คลาสย่อยแทนข้อมูล Adjacency ในกราฟ โดยมีข้อมูล ชื่อ และ weight
     static class Neighbor {
         public char nameNeighbor; // ชื่อ node ปลายทางที่เชื่อมต่อ
@@ -178,49 +178,37 @@ public class MyGraph {
         this.listOfMonster = new ArrayList<>();
     }
 
-    // หาจุดเริ่มต้น (type == 'S')
     public char findStartNode() {
         for (Map.Entry<Character, NodeInfo> entry : graph.adjL.entrySet()) {
-            if (entry.getValue().typeNode == 'S') {
-                return entry.getKey();
-            }
+            if (entry.getValue().typeNode == 'S') return entry.getKey();
         }
-        return ('-');
+        return '-';
     }
 
-    // หาจุดสิ้นสุด (type == 'E')
     public char findEndNode() {
         for (Map.Entry<Character, NodeInfo> entry : graph.adjL.entrySet()) {
-            if (entry.getValue().typeNode == 'E') {
-                return entry.getKey();
-            }
+            if (entry.getValue().typeNode == 'E') return entry.getKey();
         }
-        return ('-');
+        return '-';
     }
 
-    // คืนลิสต์ของ node ที่เป็นห้องมอนสเตอร์ (type == 'M')
     public List<Character> findMonsterNode() {
         List<Character> monsterRoom = new ArrayList<>();
         for (Map.Entry<Character, NodeInfo> entry : graph.adjL.entrySet()) {
-            if (entry.getValue().typeNode == 'M') {
-                monsterRoom.add(entry.getKey());
-            }
+            if (entry.getValue().typeNode == 'M') monsterRoom.add(entry.getKey());
         }
         return monsterRoom;
     }
 
-    // เพิ่ม node ใหม่เข้ากราฟ
     public void addVertex(char nameVertex, char typeNode) {
         this.graph.addVertex(nameVertex, typeNode);
     }
 
-    // เพิ่มเส้นทางเชื่อมระหว่าง node
     public void addEdge(char src, char dest, int weight) {
         this.graph.addEdge(src, dest, weight);
     }
 
-    // สร้าง graph สำหรับด่านสุดท้ายที่กดไปแล้วเจอบอสด้วยง่ะ
-    public static MyGraph createBossMap() {
+    public static MyGraph createMap3() {
         MyGraph g = new MyGraph();
     
         char[] nodes = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
@@ -235,7 +223,6 @@ public class MyGraph {
                 g.addVertex(node, '-');
             }
         }
-    
         g.addEdge('A', 'V', 1);
         g.addEdge('A', 'B', 2);
         g.addEdge('A', 'C', 1);
@@ -267,11 +254,10 @@ public class MyGraph {
         g.addEdge('O', 'R', 1);
         g.addEdge('O', 'U', 5);
         g.addEdge('O', 'T', 1);
-    
         return g;
     }
 
-    public static MyGraph createMap3() {
+    public static MyGraph createMap2() {
         MyGraph g = new MyGraph();
     
         char[] nodes = { 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O' };
@@ -305,7 +291,7 @@ public class MyGraph {
         g.addEdge('K', 'N', 1);
         g.addEdge('N', 'O', 1);
         g.addEdge('K', 'O', 1);
-    
+
         return g;
     }
 
