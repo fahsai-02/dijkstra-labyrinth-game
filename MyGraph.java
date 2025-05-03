@@ -306,10 +306,6 @@ public class MyGraph {
         g.addEdge('N', 'O', 1);
         g.addEdge('K', 'O', 1);
     
-        g.setNameMonsInRoom('C', "Goblin");
-        g.setNameMonsInRoom('F', "Wolf");
-        g.setNameMonsInRoom('J', "Ogre");
-    
         return g;
     }
 
