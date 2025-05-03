@@ -82,8 +82,6 @@ public class FightPanel extends JPanel {
         turnLabel.setText("Player's Turn");
         gamePanel.repaint();
     }
-    
-    
 
     private void botTurn() {
         turnLabel.setText("Bot's Turn - Thinking...");
@@ -124,14 +122,27 @@ public class FightPanel extends JPanel {
             JOptionPane.showMessageDialog(this, winner);
     
             if (playerStatus.getHp() > 0) {
-                parent.getMapPanel().markDefeated(currentNode);
+                if (parent.getCurrentMap() instanceof BossMap boss) {
+                    boss.markDefeated(currentNode);
+    
+                    if (boss.graph.get(currentNode).typeNode == 'E') {
+                        int finalScore = playerStatus.getHp() + playerStatus.getMp(); 
+                        parent.showEndGame(finalScore);
+                        return true;
+                    }
+    
+                } else if (parent.getCurrentMap() instanceof Map3Panel map3) {
+                    map3.markDefeated(currentNode);
+                }
             }
     
-            parent.showMap();
+            parent.showMap(); //ถ้าไม่เข้าเงื่อนไขบอส ถึงจะกลับแมพ
             return true;
         }
         return false;
     }
+    
+    
     
     class GamePanel extends JPanel {
         private Image playerImage;
@@ -178,3 +189,7 @@ public class FightPanel extends JPanel {
         }
     }
 }
+
+
+
+

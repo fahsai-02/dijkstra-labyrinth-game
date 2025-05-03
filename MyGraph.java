@@ -9,6 +9,7 @@ import java.util.*;
     ห่องเริ่ม Start = 'S'
     ห้องสุดท้าย End = 'E'
  */ 
+
 class NodeInfo {
     // คลาสย่อยแทนข้อมูล Adjacency ในกราฟ โดยมีข้อมูล ชื่อ และ weight
     static class Neighbor {
@@ -133,6 +134,38 @@ class WeightAndPrevious {
     }
 }
 
+class ScoreCalculator{
+    private int optimalCost;
+    private int actualCost;
+
+    public ScoreCalculator(int optimalCost) {
+        this.optimalCost = optimalCost;
+        this.actualCost = 0;
+    }
+
+    public void addMoveCost(int cost) {
+        actualCost += cost;
+    }
+
+    public int getActualCost() {
+        return actualCost;
+    }
+
+    public int getOptimalCost() {
+        return optimalCost;
+    }
+
+    public int calculateScore() {
+        if (actualCost == 0) return 1000;
+        double ratio = (double) optimalCost / actualCost;
+        return (int) (Math.min(ratio, 1.0) * 1000);
+    }
+
+    public String getScoreDisplay() {
+        return "Score: " + calculateScore() + " (" + actualCost + "/" + optimalCost + ")";
+    }
+}
+
 // คลาสหลัก เพื่อจัดการกราฟ
 public class MyGraph {
     AdjacecyList graph;                 // โครงสร้างกราฟหลัก
@@ -186,6 +219,100 @@ public class MyGraph {
         this.graph.addEdge(src, dest, weight);
     }
 
+    // สร้าง graph สำหรับด่านสุดท้ายที่กดไปแล้วเจอบอสด้วยง่ะ
+    public static MyGraph createBossMap() {
+        MyGraph g = new MyGraph();
+    
+        char[] nodes = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+                         'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V' };
+    
+        for (char node : nodes) {
+            if (node == 'A') g.addVertex(node, 'S');
+            else if (node == 'T') g.addVertex(node, 'E');
+            else if (List.of('C','G','J','K','O').contains(node)) {
+                g.addVertex(node, 'M');
+            } else {
+                g.addVertex(node, '-');
+            }
+        }
+    
+        g.addEdge('A', 'V', 1);
+        g.addEdge('A', 'B', 2);
+        g.addEdge('A', 'C', 1);
+        g.addEdge('B', 'D', 1);
+        g.addEdge('B', 'E', 1);
+        g.addEdge('D', 'E', 2);
+        g.addEdge('E', 'I', 1);
+        g.addEdge('I', 'H', 1);
+        g.addEdge('I', 'L', 3);
+        g.addEdge('I', 'M', 1);
+        g.addEdge('E', 'J', 1);
+        g.addEdge('J', 'I', 4);
+        g.addEdge('J', 'M', 3);
+        g.addEdge('J', 'K', 2);
+        g.addEdge('E', 'F', 1);
+        g.addEdge('F', 'K', 2);
+        g.addEdge('K', 'M', 1);
+        g.addEdge('L', 'M', 1);
+        g.addEdge('M', 'T', 2);
+        g.addEdge('K', 'N', 5);
+        g.addEdge('N', 'T', 4);
+        g.addEdge('L', 'O', 1);
+        g.addEdge('V', 'G', 3);
+        g.addEdge('G', 'H', 6);
+        g.addEdge('H', 'O', 1);
+        g.addEdge('O', 'P', 4);
+        g.addEdge('P', 'Q', 3);
+        g.addEdge('Q', 'O', 2);
+        g.addEdge('O', 'R', 1);
+        g.addEdge('O', 'U', 5);
+        g.addEdge('O', 'T', 1);
+    
+        return g;
+    }
+
+    public static MyGraph createMap3() {
+        MyGraph g = new MyGraph();
+    
+        char[] nodes = { 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O' };
+    
+        for (char node : nodes) {
+            if (node == 'A') g.addVertex(node, 'S');
+            else if (node == 'O') g.addVertex(node, 'E');
+            else if (List.of('C', 'F', 'J').contains(node)) {
+                g.addVertex(node, 'M'); //กำหนดห้องมอนสเตอร์
+            } else {
+                g.addVertex(node, 'N'); //ห้องธรรมดา
+            }
+        }
+    
+        g.addEdge('A', 'B', 1);
+        g.addEdge('A', 'C', 1);
+        g.addEdge('B', 'D', 1);
+        g.addEdge('B', 'E', 1);
+        g.addEdge('B', 'F', 1);
+        g.addEdge('B', 'H', 1);
+        g.addEdge('C', 'F', 1);
+        g.addEdge('C', 'I', 1);
+        g.addEdge('I', 'H', 1);
+        g.addEdge('I', 'G', 1);
+        g.addEdge('H', 'J', 1);
+        g.addEdge('G', 'O', 1);
+        g.addEdge('J', 'L', 1);
+        g.addEdge('J', 'K', 1);
+        g.addEdge('K', 'L', 1);
+        g.addEdge('K', 'M', 1);
+        g.addEdge('K', 'N', 1);
+        g.addEdge('N', 'O', 1);
+        g.addEdge('K', 'O', 1);
+    
+        g.setNameMonsInRoom('C', "Goblin");
+        g.setNameMonsInRoom('F', "Wolf");
+        g.setNameMonsInRoom('J', "Ogre");
+    
+        return g;
+    }
+
     // ใช้ Dijkstra หาเส้นทางสั้นที่สุดจาก start → end
     public int shortest(char start, char end) {
         shortestPath.compute(graph.adjL, start);
@@ -217,8 +344,12 @@ public class MyGraph {
             }
         }
     }
-}
 
+    public List<Character> getPath(char start, char end){
+        shortestPath.compute(graph.adjL, start);
+        return shortestPath.getPath(end);
+    }
+}
 
 // // --------- GraphPanel สำหรับวาดกราฟด้วย Swing ---------
 // class GraphPanel extends JPanel {

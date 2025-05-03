@@ -15,14 +15,16 @@ public class BossMap extends JPanel {
     private Image characterImage;
     private Set<Character> defeatedNodes = new HashSet<>();
     private CharacterStatus playerStatus;
+    private ScoreCalculator scoreCalculator;
 
-    public  BossMap(Map<Character, NodeInfo> graph, java.util.List<Character> path, RunGame runGame, CharacterStatus status) {
+    public  BossMap(Map<Character, NodeInfo> graph, java.util.List<Character> path, RunGame runGame, CharacterStatus status, ScoreCalculator scoreCalculator) {
         this.graph = graph;
         this.path = path;
         this.runGame = runGame;
         this.nodePositions = new HashMap<>();
         this.nodeImages = new HashMap<>();
         this.playerStatus = status;
+        this.scoreCalculator = scoreCalculator;
 
         int offsetX = 200, offsetY = 100;
         // nodePositions.put('A', new Point(120 + offsetX, 100 + offsetY));
@@ -52,7 +54,7 @@ public class BossMap extends JPanel {
         loadImage('B', "PicsTemp\\B.png");
         loadImage('C', "PicsTemp\\C.png");
         loadImage('D', "PicsTemp\\D.png");
-        loadImage('E', "PicsTemp\\R.png");
+        loadImage('E', "PicsTemp\\E.png");
         loadImage('F', "PicsTemp\\F.png");
         loadImage('G', "PicsTemp\\G.png");
         loadImage('H', "PicsTemp\\H.png");
@@ -99,14 +101,23 @@ public class BossMap extends JPanel {
                             playerStatus.loseMP(cost);
                             currentNode = clickedNode;
                             selected = clickedNode;
+
+                            scoreCalculator.addMoveCost(cost); // บันทึก cost ที่เดิน
+
                             NodeInfo clicked = graph.get(clickedNode);
-                            if (clicked.typeNode == 'N' && !defeatedNodes.contains(clickedNode)) {
+                            if (clicked.typeNode == 'M' && !defeatedNodes.contains(clickedNode)) {
                                 JOptionPane.showMessageDialog( BossMap.this, "Entering battle at " + clickedNode);
                                 runGame.showFight(clickedNode);
-                            } else if (clicked.typeNode == 'X') {
-                                JOptionPane.showMessageDialog( BossMap.this, "You have entered the BOSS ROOM!");
+                            } 
+                            else if (clicked.typeNode == 'E' && !defeatedNodes.contains(clickedNode)) {
+                                JOptionPane.showMessageDialog(BossMap.this, "You have entered the BOSS ROOM!");
                                 runGame.showFight(clickedNode);
                             }
+                            else if (clicked.typeNode == 'N' && !defeatedNodes.contains(clickedNode)) {
+                                JOptionPane.showMessageDialog(BossMap.this, "Entering battle at " + clickedNode);
+                                runGame.showFight(clickedNode);
+                            }
+  
                             repaint();
                         }
                         break;
@@ -129,6 +140,7 @@ public class BossMap extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(Color.BLACK);
+        g.drawString(scoreCalculator.getScoreDisplay(), 20, 70);
 
         for (Map.Entry<Character, NodeInfo> entry : graph.entrySet()) {
             char from = entry.getKey();
@@ -182,13 +194,35 @@ public class BossMap extends JPanel {
             g.drawImage(characterImage, cp.x - 25, cp.y - 60, this);
             g.setColor(Color.BLACK);
             g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString(scoreCalculator.getScoreDisplay(), 20, 70);
             g.drawString("Player HP: " + playerStatus.getHp(), 20, 20);
             g.drawString("Player MP: " + playerStatus.getMp(), 20, 45);
         }
     }
 
+    public void handlePlayerMove(char nextNode) {
+        currentNode = nextNode;
+    
+        NodeInfo info = graph.get(nextNode);
+        if (info.typeNode == 'M') {
+            runGame.showFight(nextNode);
+        } else if (info.typeNode == 'E') {
+            runGame.showFight(nextNode);
+        }
+    
+        repaint();
+    }
+
     public void markDefeated(char node) {
         defeatedNodes.add(node);
+    
+        // ถ้า node ที่ชนะคือห้องบอส → แสดง end game
+        if (graph.get(node).typeNode == 'X') {
+            SwingUtilities.invokeLater(() ->
+                runGame.showEndGame(scoreCalculator.calculateScore())
+            );
+        }
+    
         repaint();
     }
 }

@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class EndGamePanel extends JPanel {
-    public EndGamePanel(int finalScore) {
+    public EndGamePanel(int finalScore, RunGame runGame) {
         setLayout(new BorderLayout());
 
         JLabel titleLabel = new JLabel("Congratulations! You have cleared the Boss Room!", SwingConstants.CENTER);
@@ -15,7 +15,12 @@ public class EndGamePanel extends JPanel {
         exitButton.setFont(new Font("Arial", Font.PLAIN, 20));
         exitButton.addActionListener(e -> System.exit(0));
 
+        JButton menuButton = new JButton("Back to Menu");
+        menuButton.setFont(new Font("Arial", Font.PLAIN, 20));
+        menuButton.addActionListener(e -> runGame.showMenu());  // ต้องมีเมธอดนี้ใน RunGame
+
         JPanel bottomPanel = new JPanel();
+        bottomPanel.add(menuButton);
         bottomPanel.add(exitButton);
 
         add(titleLabel, BorderLayout.NORTH);
@@ -23,3 +28,5 @@ public class EndGamePanel extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 }
+
+
