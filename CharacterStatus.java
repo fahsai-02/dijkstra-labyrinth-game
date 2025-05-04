@@ -2,7 +2,8 @@ public class CharacterStatus {
     private int hp;
     private int mp;
     private int maxHp;
-    private int atk = 20;
+    private int maxMp;
+    private int atk = 200;
     private int def = 0;
     private int gold = 0; // เงินของผู้เล่น
 
@@ -11,12 +12,13 @@ public class CharacterStatus {
 
     public CharacterStatus(int hp, int mp) {
         this.hp = this.maxHp = hp;
-        this.mp = mp;
+        this.mp = this.maxMp =  mp;
     }
 
     public int getHp() { return hp; }
     public int getMp() { return mp; }
     public int getMaxHp() { return maxHp; }
+    public int getMaxMp() { return maxMp; }
     public int getAtk() { return atk; }
     public int getDef() { return def; }
     public int getGold() { return gold; }

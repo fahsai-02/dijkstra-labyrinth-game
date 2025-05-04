@@ -1,6 +1,6 @@
 import javax.swing.*;
 import java.util.List;
-import java.awt.*;
+// import java.awt.*;
 
 public class RunGame extends JFrame {
     private MainMenu mainMenu;
@@ -9,10 +9,11 @@ public class RunGame extends JFrame {
     private ItemSelection itemSelection;
     private CharacterStatus playerStatus;
     private int currentStage = 1;
+    private BossFightPanel bossFightPanel;
 
     public RunGame() {
         setTitle("The Labyrinth - Tower of Trials");
-        setSize(1280, 800);
+        setSize(1920, 1080); //1280 800
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -60,20 +61,22 @@ public class RunGame extends JFrame {
     public void nextMap() {
         remove(itemSelection);
         currentStage++;
-
-        if (currentStage == 2)
+    
+        if (currentStage == 2) {
             gamePanel = new GamePanel(MapData.loadMap2(), this, playerStatus);
-        else if (currentStage == 3)
+        } else if (currentStage == 3) {
             gamePanel = new GamePanel(MapData.loadMap3(), this, playerStatus);
-            else {
+        } else {
             JOptionPane.showMessageDialog(this, "Congratulations! You've cleared all stages!");
-            System.exit(0);
+            showBossFight('Z'); // 👈 เพิ่มตรงนี้แทน System.exit(0);
+            return;
         }
-
+    
         add(gamePanel);
         revalidate();
         repaint();
     }
+    
 
     public GamePanel getMapPanel() {
         return gamePanel;
@@ -98,6 +101,40 @@ public class RunGame extends JFrame {
         revalidate();
         repaint();
     }
+
+    public void showBossFight(char node) {
+        if (bossFightPanel == null) {
+            bossFightPanel = new BossFightPanel(this, playerStatus);
+        }
+        remove(gamePanel);
+        add(bossFightPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void jumpToStage(int stage) {
+        currentStage = stage;
+        if (stage == 1) {
+            gamePanel = new GamePanel(MapData.loadMap1(), this, playerStatus);
+        } else if (stage == 2) {
+            gamePanel = new GamePanel(MapData.loadMap2(), this, playerStatus);
+        } else if (stage == 3) {
+            gamePanel = new GamePanel(MapData.loadMap3(), this, playerStatus);
+        }
+        getContentPane().removeAll();
+        add(gamePanel);
+        revalidate();
+        repaint();
+    }
+    
+    public void jumpToBossFight() {
+        getContentPane().removeAll();
+        add(new BossFightPanel(this, playerStatus));
+        revalidate();
+        repaint();
+    }
+    
+    
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new RunGame());
