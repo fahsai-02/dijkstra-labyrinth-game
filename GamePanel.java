@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
+import java.util.Stack;
 
 public class GamePanel extends JPanel implements MouseListener {
     private MapData mapData;
@@ -10,6 +11,8 @@ public class GamePanel extends JPanel implements MouseListener {
     private RunGame parent;
     private int totalDistance = 0;
     private CharacterStatus playerStatus;
+    private Stack<Character> moveHistory = new Stack<>();
+    private Stack<Integer> mpCostHistory = new Stack<>();
 
     public GamePanel(MapData mapData, RunGame parent, CharacterStatus playerStatus) {
         this.mapData = mapData;
@@ -20,17 +23,22 @@ public class GamePanel extends JPanel implements MouseListener {
 
         addMouseListener(this);
         setFocusable(true);
+        setLayout(null);
+
+        JButton backBtn = new JButton("Undo Move");
+        backBtn.setFont(new Font("Arial", Font.BOLD, 18));
+        backBtn.setBounds(50, 900, 150, 40);
+        backBtn.addActionListener(e -> undoMove());
+        add(backBtn);
     }
 
     private void drawPlayerStatus(Graphics g) {
         g.setColor(Color.white);
         g.setFont(new Font("Serif", Font.BOLD, 22));
-
-        int x = 20, y = 40, lineHeight = 50;
-        g.drawString("HP:  " + playerStatus.getHp(), x + 200, y + 40);
-        g.drawString("MP:  " + playerStatus.getMp(), x + 200, y + lineHeight + 40);
-        g.drawString("ATK: " + playerStatus.getAtk(), x + 400, y + 40);
-        g.drawString("DEF: " + playerStatus.getDef(), x + 400, y + lineHeight + 40);
+        g.drawString("HP:  " + playerStatus.getHp(), 220, 80);
+        g.drawString("MP:  " + playerStatus.getMp(), 220, 130);
+        g.drawString("ATK: " + playerStatus.getAtk(), 420, 80);
+        g.drawString("DEF: " + playerStatus.getDef(), 420, 130);
     }
 
     @Override
@@ -49,37 +57,17 @@ public class GamePanel extends JPanel implements MouseListener {
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         g2.setStroke(new BasicStroke(3));
 
-        int textOffsetX = -22;
-        int textOffsetY = 5;
-
         for (Map.Entry<Character, NodeInfo> entry : mapData.graph.graph.adjL.entrySet()) {
             char from = entry.getKey();
             Point p1 = mapData.getNodePosition(from);
-
             for (NodeInfo.Neighbor neighbor : entry.getValue().neighbors) {
                 char to = neighbor.nameNeighbor;
-
                 if (from < to) {
                     Point p2 = mapData.getNodePosition(to);
-                    double dx = p2.x - p1.x;
-                    double dy = p2.y - p1.y;
-                    double length = Math.sqrt(dx * dx + dy * dy);
-                    double gap = 50;
-                    double ratio = (length - gap) / (2 * length);
-
-                    int x1 = (int) (p1.x + dx * ratio);
-                    int y1 = (int) (p1.y + dy * ratio);
-                    int x2 = (int) (p2.x - dx * ratio);
-                    int y2 = (int) (p2.y - dy * ratio);
-
-                    g2.drawLine(p1.x, p1.y, x1, y1);
-                    g2.drawLine(x2, y2, p2.x, p2.y);
-
-                    String text = neighbor.weight + " m";
-                    int mx = (p1.x + p2.x) / 2 + textOffsetX;
-                    int my = (p1.y + p2.y) / 2 + textOffsetY;
-
-                    g2.drawString(text, mx, my);
+                    g2.drawLine(p1.x, p1.y, p2.x, p2.y);
+                    int mx = (p1.x + p2.x) / 2 - 22;
+                    int my = (p1.y + p2.y) / 2 + 5;
+                    g2.drawString(neighbor.weight + " m", mx, my);
                 }
             }
         }
@@ -88,17 +76,14 @@ public class GamePanel extends JPanel implements MouseListener {
     private void drawNodes(Graphics g) {
         for (Map.Entry<Character, NodeInfo> entry : mapData.graph.graph.adjL.entrySet()) {
             char nodeName = entry.getKey();
-            NodeInfo node = entry.getValue();
             Point p = mapData.getNodePosition(nodeName);
-            Image img = mapData.getNodeImage(node.typeNode);
-
+            Image img = mapData.getNodeImage(entry.getValue().typeNode);
             if (img != null) {
                 g.drawImage(img, p.x - 32, p.y - 32, 64, 64, this);
             } else {
                 g.setColor(Color.GRAY);
                 g.fillOval(p.x - 20, p.y - 20, 40, 40);
             }
-
             g.setColor(Color.WHITE);
             g.drawString(String.valueOf(nodeName), p.x - 5, p.y + 5);
         }
@@ -115,12 +100,9 @@ public class GamePanel extends JPanel implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         Point click = e.getPoint();
-
         for (Map.Entry<Character, Point> entry : mapData.nodeCoordinates.entrySet()) {
             char targetNode = entry.getKey();
-            Point target = entry.getValue();
-
-            if (click.distance(target) < 32 && targetNode != playerNode) {
+            if (click.distance(entry.getValue()) < 32 && targetNode != playerNode) {
                 java.util.List<Character> path = mapData.graph.getPath(playerNode, targetNode);
                 if (path != null && path.size() > 1) {
                     moveAlongPath(path);
@@ -137,11 +119,7 @@ public class GamePanel extends JPanel implements MouseListener {
 
     private void deductPlayerEnergy(int distance) {
         double effectiveDistance = distance / 10.0;
-
-        if (playerStatus.hasWingedBoots()) {
-            effectiveDistance *= 0.5;
-        }
-
+        if (playerStatus.hasWingedBoots()) effectiveDistance *= 0.5;
         int mpLoss = (int) Math.ceil(effectiveDistance);
         int currentMp = playerStatus.getMp();
 
@@ -161,12 +139,8 @@ public class GamePanel extends JPanel implements MouseListener {
                 char to = path.get(i);
 
                 int weight = mapData.graph.graph.adjL.get(from).neighbors.stream()
-                    .filter(n -> n.nameNeighbor == to)
-                    .map(n -> n.weight)
-                    .findFirst()
-                    .orElse(0);
+                        .filter(n -> n.nameNeighbor == to).map(n -> n.weight).findFirst().orElse(0);
 
-                // Check MP before moving
                 double effectiveDistance = weight / 10.0;
                 if (playerStatus.hasWingedBoots()) effectiveDistance *= 0.5;
                 int mpCost = (int) Math.ceil(effectiveDistance);
@@ -180,36 +154,45 @@ public class GamePanel extends JPanel implements MouseListener {
                     return;
                 }
 
+                moveHistory.push(from);
+                mpCostHistory.push(mpCost);
                 totalDistance += weight;
                 deductPlayerEnergy(weight);
                 playerNode = to;
                 repaint();
 
-                try {
-                    Thread.sleep(400);
-                } catch (InterruptedException ignored) {}
+                try { Thread.sleep(400); } catch (InterruptedException ignored) {}
 
                 NodeInfo node = mapData.graph.graph.adjL.get(playerNode);
                 if (node.typeNode == 'M') {
                     SwingUtilities.invokeLater(() -> parent.showFightPanel(playerNode));
                     return;
-                } 
-                else if (node.typeNode == 'E') {
+                } else if (node.typeNode == 'E') {
                     int shortest = mapData.graph.shortest(mapData.getStartNode(), playerNode);
                     int lost = Math.max(0, totalDistance - shortest);
                     int score = Math.max(0, 1000 - (lost * 3));
                     playerStatus.addScore(score);
-                    JOptionPane.showMessageDialog(this,
-                        "Stage Complete!\nShortest path: " + shortest +
-                        "\nYour path: " + totalDistance +
-                        "\nScore: " + score + " / 1000");
-
+                    JOptionPane.showMessageDialog(this, "Stage Complete!\nShortest path: " + shortest +
+                        "\nYour path: " + totalDistance + "\nScore: " + score + " / 1000");
                     SwingUtilities.invokeLater(() -> parent.showShop());
                     return;
                 }
             }
         }).start();
     }
+
+    private void undoMove() {
+        if (!moveHistory.isEmpty() && !mpCostHistory.isEmpty()) {
+            char previous = moveHistory.pop();
+            int refundedMp = mpCostHistory.pop();
+            playerNode = previous;
+            playerStatus.restoreMP(refundedMp);
+            repaint();
+        } else {
+            JOptionPane.showMessageDialog(this, "No previous move to undo.");
+        }
+    }
+
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
