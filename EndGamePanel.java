@@ -15,6 +15,13 @@ public class EndGamePanel extends JPanel {
         bgLabel.setBounds(0, 0, 1920, 1080);
         add(bgLabel);
 
+        // ===== FINAL SCORE =====
+        JLabel scoreLabel = new JLabel("Final Score: " + score + " / 3000", SwingConstants.CENTER);
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 40));
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setBounds(560, 250, 800, 60);
+        add(scoreLabel);
+
         // ===== MAIN MENU Button =====
         JButton mainMenuBtn = createImageButton("assets\\BossFight\\MenuButton.PNG", 600, 750, 300, 80);
         mainMenuBtn.addActionListener(e -> parent.showMainMenu());
@@ -25,10 +32,11 @@ public class EndGamePanel extends JPanel {
         exitBtn.addActionListener(e -> System.exit(0));
         add(exitBtn);
 
-        // Make buttons appear above BG
-        setComponentZOrder(mainMenuBtn, 0);
-        setComponentZOrder(exitBtn, 0);
-        setComponentZOrder(bgLabel, 2);
+        // ===== Layering =====
+        setComponentZOrder(scoreLabel, 0);
+        setComponentZOrder(mainMenuBtn, 1);
+        setComponentZOrder(exitBtn, 2);
+        setComponentZOrder(bgLabel, 3);
     }
 
     private JButton createImageButton(String path, int x, int y, int w, int h) {

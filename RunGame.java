@@ -85,7 +85,6 @@ public class RunGame extends JFrame {
         repaint();
     }
     
-
     public GamePanel getMapPanel() {
         return gamePanel;
     }
@@ -102,13 +101,15 @@ public class RunGame extends JFrame {
         repaint();
     }
     
-    public void showEndGame(int finalScore, boolean isWin) {
+    public void showEndGame(int ignoredScore, boolean isWin) {
+        int totalScore = playerStatus.getTotalScore(); 
         getContentPane().removeAll();
-        EndGamePanel endPanel = new EndGamePanel(finalScore, isWin, this);
+        EndGamePanel endPanel = new EndGamePanel(totalScore, isWin, this);
         add(endPanel);
         revalidate();
         repaint();
     }
+    
 
     public void showBossFight(char node) {
         if (bossFightPanel == null) {

@@ -193,10 +193,12 @@ public class GamePanel extends JPanel implements MouseListener {
                 if (node.typeNode == 'M') {
                     SwingUtilities.invokeLater(() -> parent.showFightPanel(playerNode));
                     return;
-                } else if (node.typeNode == 'E') {
+                } 
+                else if (node.typeNode == 'E') {
                     int shortest = mapData.graph.shortest(mapData.getStartNode(), playerNode);
                     int lost = Math.max(0, totalDistance - shortest);
-                    int score = Math.max(0, 1000 - (lost * 5));
+                    int score = Math.max(0, 1000 - (lost * 3));
+                    playerStatus.addScore(score);
                     JOptionPane.showMessageDialog(this,
                         "Stage Complete!\nShortest path: " + shortest +
                         "\nYour path: " + totalDistance +

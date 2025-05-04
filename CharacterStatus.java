@@ -3,9 +3,10 @@ public class CharacterStatus {
     private int mp;
     private int maxHp;
     private int maxMp;
-    private int atk = 20;
+    private int atk = 200;
     private int def = 0;
     private int gold = 0; // เงินของผู้เล่น
+    private int totalScore = 0;
 
     private boolean hasWingedBoots = false;
     private boolean hasLuckyCharm = false;
@@ -99,5 +100,13 @@ public class CharacterStatus {
             return true;
         }
         return false;
+    }
+    
+    public void addScore(int score) {
+        totalScore += score;
+    }
+
+    public int getTotalScore() {
+        return totalScore;
     }
 }
