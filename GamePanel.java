@@ -11,8 +11,14 @@ public class GamePanel extends JPanel implements MouseListener {
     private RunGame parent;
     private int totalDistance = 0;
     private CharacterStatus playerStatus;
+
     private Stack<Character> moveHistory = new Stack<>();
     private Stack<Integer> mpCostHistory = new Stack<>();
+    private Stack<Integer> distanceHistory = new Stack<>();
+
+    private int undoCount = 0;
+    private final int undoLimit = 5;
+    private JLabel undoLabel;
 
     public GamePanel(MapData mapData, RunGame parent, CharacterStatus playerStatus) {
         this.mapData = mapData;
@@ -30,6 +36,12 @@ public class GamePanel extends JPanel implements MouseListener {
         backBtn.setBounds(50, 900, 150, 40);
         backBtn.addActionListener(e -> undoMove());
         add(backBtn);
+
+        undoLabel = new JLabel("Undo Left: " + (undoLimit - undoCount));
+        undoLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        undoLabel.setForeground(Color.WHITE);
+        undoLabel.setBounds(220, 900, 200, 40);
+        add(undoLabel);
     }
 
     private void drawPlayerStatus(Graphics g) {
@@ -156,6 +168,8 @@ public class GamePanel extends JPanel implements MouseListener {
 
                 moveHistory.push(from);
                 mpCostHistory.push(mpCost);
+                distanceHistory.push(weight);
+
                 totalDistance += weight;
                 deductPlayerEnergy(weight);
                 playerNode = to;
@@ -173,7 +187,7 @@ public class GamePanel extends JPanel implements MouseListener {
                     int score = Math.max(0, 1000 - (lost * 3));
                     playerStatus.addScore(score);
                     JOptionPane.showMessageDialog(this, "Stage Complete!\nShortest path: " + shortest +
-                        "\nYour path: " + totalDistance + "\nScore: " + score + " / 1000");
+                            "\nYour path: " + totalDistance + "\nScore: " + score + " / 1000");
                     SwingUtilities.invokeLater(() -> parent.showShop());
                     return;
                 }
@@ -182,11 +196,21 @@ public class GamePanel extends JPanel implements MouseListener {
     }
 
     private void undoMove() {
-        if (!moveHistory.isEmpty() && !mpCostHistory.isEmpty()) {
+        if (undoCount >= undoLimit) {
+            JOptionPane.showMessageDialog(this, "Undo limit reached! You can only undo 5 times.");
+            return;
+        }
+        if (!moveHistory.isEmpty() && !mpCostHistory.isEmpty() && !distanceHistory.isEmpty()) {
             char previous = moveHistory.pop();
             int refundedMp = mpCostHistory.pop();
+            int refundedDist = distanceHistory.pop();
+
             playerNode = previous;
             playerStatus.restoreMP(refundedMp);
+            totalDistance -= refundedDist;
+
+            undoCount++;
+            undoLabel.setText("Undo Left: " + (undoLimit - undoCount));
             repaint();
         } else {
             JOptionPane.showMessageDialog(this, "No previous move to undo.");
