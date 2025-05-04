@@ -1,25 +1,27 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
+import java.util.List;
 
 public class FightPanel extends JPanel {
-    private int botHP = 100;
     private boolean isPlayerTurn = true;
 
     private JLabel turnLabel;
     private RunGame parent;
-    private GamePanel gamePanel;
     private char currentNode;
 
     private CharacterStatus playerStatus;
+    private MonsterStatus monster;
+    private FightScenePanel fightScene;
+    private Image monsterImage;
 
     public FightPanel(RunGame parent, CharacterStatus status) {
         this.parent = parent;
         this.playerStatus = status;
         setLayout(new BorderLayout());
 
-        gamePanel = new GamePanel();
-        add(gamePanel, BorderLayout.CENTER);
+        fightScene = new FightScenePanel();
+        add(fightScene, BorderLayout.CENTER);
 
         turnLabel = new JLabel("Player's Turn");
         turnLabel.setFont(new Font("Arial", Font.BOLD, 30));
@@ -30,6 +32,7 @@ public class FightPanel extends JPanel {
 
         JButton normATKbutton = new JButton("Normal Attack");
         JButton hardATKbutton = new JButton("Hard Attack");
+
         normATKbutton.setPreferredSize(new Dimension(500, 50));
         hardATKbutton.setPreferredSize(new Dimension(500, 50));
         normATKbutton.setFont(new Font("Arial", Font.BOLD, 18));
@@ -51,61 +54,65 @@ public class FightPanel extends JPanel {
 
         normATKbutton.addActionListener(e -> {
             if (isPlayerTurn) {
-                botHP -= 100;
-                turnLabel.setText("Bot's Turn");
-                gamePanel.repaint();
-                if (checkGameOver()) return;
-                isPlayerTurn = false;
-                botTurn();
+                attackMonster(playerStatus.getAtk());
             }
         });
 
         hardATKbutton.addActionListener(e -> {
             if (isPlayerTurn && playerStatus.getMp() >= 15) {
-                botHP -= 20;
+                attackMonster(playerStatus.getAtk() + 15);
                 playerStatus.loseMP(15);
-                turnLabel.setText("Bot's Turn");
-                gamePanel.repaint();
-                if (checkGameOver()) return;
-                isPlayerTurn = false;
-                botTurn();
             } else if (isPlayerTurn) {
                 JOptionPane.showMessageDialog(this, "Not enough MP to perform Hard Attack!");
             }
         });
     }
 
+    private void attackMonster(int damage) {
+        int reduced = Math.max(0, damage - monster.getDef());
+        monster.reduceHp(reduced);
+        turnLabel.setText("Monster's Turn");
+        fightScene.repaint();
+        if (checkGameOver()) return;
+        isPlayerTurn = false;
+        botTurn();
+    }
+
     public void startFight(char node) {
         this.currentNode = node;
         isPlayerTurn = true;
-        botHP = 100; 
+
+        int stageLevel = parent.getCurrentStage();
+        List<String> names = MonsterStatus.getMonsterNamesForStage(stageLevel);
+        String randomName = names.get(new Random().nextInt(names.size()));
+        monster = MonsterStatus.getMonster(randomName, stageLevel);
+
+        try {
+            monsterImage = new ImageIcon(monster.getImagePath()).getImage()
+                    .getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+        } catch (Exception e) {
+            monsterImage = null;
+        }
+
         turnLabel.setText("Player's Turn");
-        gamePanel.repaint();
+        fightScene.repaint();
     }
 
     private void botTurn() {
-        turnLabel.setText("Bot's Turn - Thinking...");
-        gamePanel.repaint();
+        turnLabel.setText("Monster's Turn - Thinking...");
+        fightScene.repaint();
 
         Timer delayTimer = new Timer(1000, e -> {
-            String actionAnnounce;
-            if (new Random().nextBoolean()) {
-                playerStatus.damage(20);
-                actionAnnounce = "Bot chose Hard Attack!";
-            } else {
-                playerStatus.damage(10);
-                actionAnnounce = "Bot chose Normal Attack!";
-            }
-
-            turnLabel.setText(actionAnnounce);
-            gamePanel.repaint();
+            playerStatus.damage(monster.getAtk());
+            turnLabel.setText(monster.getName() + " attacks!");
+            fightScene.repaint();
 
             if (checkGameOver()) return;
 
             Timer endBotTurnTimer = new Timer(1000, endEvent -> {
                 turnLabel.setText("Player's Turn");
                 isPlayerTurn = true;
-                gamePanel.repaint();
+                fightScene.repaint();
             });
             endBotTurnTimer.setRepeats(false);
             endBotTurnTimer.start();
@@ -116,43 +123,32 @@ public class FightPanel extends JPanel {
     }
 
     private boolean checkGameOver() {
-        if (playerStatus.getHp() <= 0 || botHP <= 0) {
-            botHP = Math.max(0, botHP); // กันติดลบ
-            boolean isPlayerWin = playerStatus.getHp() > 0;
-            String winner = isPlayerWin ? "Player Wins!" : "Bot Wins!";
-            JOptionPane.showMessageDialog(this, winner);
-    
-            int finalScore = playerStatus.getHp() + playerStatus.getMp();
-    
-            if (isPlayerWin) {
-                if (parent.getCurrentMap() instanceof Map3Panel boss) {
-                    boss.markDefeated(currentNode);
-                    if (boss.graph.get(currentNode).typeNode == 'E') {
-                        parent.showEndGame(finalScore, true); //ชนะบอส
-                        return true;
-                    }
-                } else if (parent.getCurrentMap() instanceof Map2Panel map2) {
-                    map2.markDefeated(currentNode);
-                }
-                parent.showMap(); // กลับไปยังแมพหลังจากสู้เสร็จ
+        if (!playerStatus.isAlive() || monster.getHp() <= 0) {
+            String msg;
+            if (playerStatus.isAlive()) {
+                msg = "You defeated " + monster.getName() + "!\nGold +" + monster.getRewardGold();
+                playerStatus.gainGold(monster.getRewardGold());
+                parent.getMapPanel().markDefeated(currentNode);
             } else {
-                parent.showEndGame(finalScore, false); //แพ้บอส
+                msg = "You were defeated by " + monster.getName();
             }
-    
+
+            JOptionPane.showMessageDialog(this, msg);
+            parent.showMap();
             return true;
         }
         return false;
     }
-    
-    
-    class GamePanel extends JPanel {
-        private Image playerImage;
-        private Image botImage;
 
-        public GamePanel() {
+    class FightScenePanel extends JPanel {
+        private Image playerImage;
+        private Image backgroundImage;
+
+        public FightScenePanel() {
             try {
                 playerImage = new ImageIcon("character.png").getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-                botImage = new ImageIcon("tungtungsahur.png").getImage().getScaledInstance(640, 360, Image.SCALE_SMOOTH);
+                backgroundImage = new ImageIcon("assets/Monster/BgLvOne.JPG").getImage()
+                        .getScaledInstance(1280, 800, Image.SCALE_SMOOTH);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Error loading image: " + e.getMessage());
             }
@@ -161,32 +157,36 @@ public class FightPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            Font font = new Font("Arial", Font.BOLD, 20);
-            g.setFont(font);
 
-            if (playerImage != null) g.drawImage(playerImage, 30, 30, this);
-            if (botImage != null) g.drawImage(botImage, 635, 300, this);
+            if (backgroundImage != null)
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
 
-            int maxHP = 100, maxMP = 50, barW = 300, mpBarW = 150;
+            g.setFont(new Font("Arial", Font.BOLD, 20));
 
-            int pHPBar = (playerStatus.getHp() * barW) / maxHP;
-            int pMPBar = (playerStatus.getMp() * mpBarW) / maxMP;
-            int bHPBar = (botHP * barW) / maxHP;
+            if (playerImage != null) g.drawImage(playerImage, 100, 400, this);
+            if (monsterImage != null) g.drawImage(monsterImage, 700, 300, this);
+
+            int barW = 300;
+            int mpBarW = 150;
+
+            int pHPBar = (playerStatus.getHp() * barW) / playerStatus.getMaxHp();
+            int pMPBar = (playerStatus.getMp() * mpBarW) / 50;
+            int bHPBar = (monster.getHp() * barW) / monster.getMaxHp();
 
             g.setColor(Color.RED);
-            g.fillRect(250, 70, pHPBar, 30);
-            g.fillRect(780, 700, bHPBar, 30);
+            g.fillRect(100, 80, pHPBar, 25);
+            g.fillRect(850, 80, bHPBar, 25);
 
             g.setColor(Color.BLUE);
-            g.fillRect(250, 120, pMPBar, 30);
+            g.fillRect(100, 120, pMPBar, 20);
 
             g.setColor(Color.WHITE);
-            g.drawString("Player", 250, 50);
-            g.drawString("Bot", 940, 300);
-            g.drawString("HP: " + playerStatus.getHp(), 250 + 120, 90);
-            g.drawString("MP: " + playerStatus.getMp(), 250 + 120, 140);
-            g.drawString("HP: " + botHP, 780 + 120, 720);
+            g.drawString("Player", 100, 60);
+            g.drawString("HP: " + playerStatus.getHp(), 220, 100);
+            g.drawString("MP: " + playerStatus.getMp(), 220, 140);
 
+            g.drawString(monster.getName(), 850, 60);
+            g.drawString("HP: " + monster.getHp() + " / " + monster.getMaxHp(), 960, 100);
         }
     }
 }

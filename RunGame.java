@@ -1,104 +1,89 @@
 import javax.swing.*;
-import java.awt.*;
-import java.util.*;
 import java.util.List;
 
 public class RunGame extends JFrame {
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
-    private Map3Panel map3Panel;
-    private Map2Panel map2Panel;
+    private MainMenu mainMenu;
+    private GamePanel gamePanel;
     private FightPanel fightPanel;
-    private EndGamePanel endPanel;
-    private CharacterStatus playerStatus = new CharacterStatus(200, 100);
-    private JPanel currentMap;
-    private BossFightPanel bossFightPanel;
+    private ItemSelection itemSelection;
+    private CharacterStatus playerStatus;
+    private int currentStage = 1;
 
-    public JPanel getCurrentMap() {
-        return currentMap;
-    }
-
-    public void setCurrentMap(JPanel map) {
-        this.currentMap = map;
-    }
-
-    //Constructure
     public RunGame() {
-        setTitle("The Labyrinth Tower of Trials");
-        setSize(1920, 1080);
+        setTitle("The Labyrinth - Tower of Trials");
+        setSize(1280, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-        cardLayout = new CardLayout();
-        mainPanel = new JPanel(cardLayout);
+        playerStatus = new CharacterStatus(150, 100);
 
-        // ใช้ MyGraph.createMap2() สำหรับ Map 2
-        MyGraph map2Graph = MyGraph.createMap2();
-        map2Panel = new Map2Panel(map2Graph.graph.adjL, this, playerStatus);
-        mainPanel.add(map2Panel, "map2");
-        currentMap = map2Panel;
-
-        fightPanel = new FightPanel(this, playerStatus);
-        mainPanel.add(fightPanel, "fight");
-
-        bossFightPanel = new BossFightPanel(this, playerStatus);
-        mainPanel.add(bossFightPanel, "bossFight");
-
-        add(mainPanel);
-        cardLayout.show(mainPanel, "map2");
+        mainMenu = new MainMenu(this);
+        add(mainMenu);
 
         setVisible(true);
     }
 
-    public void showMap() {
-        if (currentMap != null) {
-            if (currentMap instanceof Map3Panel) {
-                cardLayout.show(mainPanel, "map3");
-                map3Panel.repaint();
-            } else if (currentMap instanceof Map2Panel) {
-                cardLayout.show(mainPanel, "map2");
-                map2Panel.repaint();
-            }
-        }
+    public void startGame() {
+        remove(mainMenu);
+        gamePanel = new GamePanel(MapData.loadMap1(), this, playerStatus);
+        add(gamePanel);
+        revalidate();
+        repaint();
     }
 
-    public void showMap3() {
-        MyGraph map3Graph = MyGraph.createMap3();
-
-        char start = map3Graph.findStartNode();
-        char end = map3Graph.findEndNode();
-        int optimalCost = map3Graph.shortest(start, end);
-        List<Character> path = map3Graph.getPath(start, end);
-
-        ScoreCalculator scoreCalculator = new ScoreCalculator(optimalCost);
-
-        map3Panel = new Map3Panel(map3Graph.graph.adjL, path, this, playerStatus, scoreCalculator);
-        mainPanel.add(map3Panel, "map3");
-        cardLayout.show(mainPanel, "map3");
-        currentMap = map3Panel;
-    }
-
-    public void showFight(char node) {
-        cardLayout.show(mainPanel, "fight");
+    public void showFightPanel(char node) {
+        remove(gamePanel);
+        fightPanel = new FightPanel(this, playerStatus);
         fightPanel.startFight(node);
+        add(fightPanel);
+        revalidate();
+        repaint();
     }
 
-    public void showBossFight(char node) {
-        bossFightPanel = new BossFightPanel(this, playerStatus); // สร้างใหม่เสมอ
-        mainPanel.add(bossFightPanel, "bossFight");
-        cardLayout.show(mainPanel, "bossFight");
+    public void showMap() {
+        remove(fightPanel);
+        add(gamePanel);
+        revalidate();
+        repaint();
     }
 
-    public void showEndGame(int finalScore, boolean isWin) {
-        endPanel = new EndGamePanel(finalScore, isWin, this);
-        mainPanel.add(endPanel, "end");
-        cardLayout.show(mainPanel, "end");
+    public void showShop() {
+        remove(gamePanel);
+        List<ItemList.Item> items = ItemList.getAllItems(currentStage);
+        itemSelection = new ItemSelection(this, playerStatus, items);
+        add(itemSelection);
+        revalidate();
+        repaint();
     }
 
-    public void showMenu() {
-        JOptionPane.showMessageDialog(this, "Menu system not implemented yet.");
+    public void nextMap() {
+        remove(itemSelection);
+        currentStage++;
+
+        if (currentStage == 2)
+            gamePanel = new GamePanel(MapData.loadMap2(), this, playerStatus);
+        else if (currentStage == 3)
+            gamePanel = new GamePanel(MapData.loadMap3(), this, playerStatus);
+            else {
+            JOptionPane.showMessageDialog(this, "Congratulations! You've cleared all stages!");
+            System.exit(0);
+        }
+
+        add(gamePanel);
+        revalidate();
+        repaint();
     }
+
+    public GamePanel getMapPanel() {
+        return gamePanel;
+    }
+
+    public int getCurrentStage() {
+        return currentStage;
+    }
+    
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(RunGame::new);
+        SwingUtilities.invokeLater(() -> new RunGame());
     }
 }

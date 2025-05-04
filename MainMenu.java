@@ -8,14 +8,14 @@ public class MainMenu extends JPanel implements MouseListener {
     private Image exitButton;
     private Rectangle playBounds;
     private Rectangle exitBounds;
-    private GameFrame parent;
+    private RunGame parent;
 
-    public MainMenu(GameFrame parent) {
+    public MainMenu(RunGame parent) {
         this.parent = parent;
 
-        bgImage = new ImageIcon("StartPage/BG.JPG").getImage(); //1920, 1080
-        playButton = new ImageIcon("StartPage/Play.PNG").getImage().getScaledInstance(670, 310, Image.SCALE_SMOOTH);
-        exitButton = new ImageIcon("StartPage/Exit.PNG").getImage().getScaledInstance(332, 184, Image.SCALE_SMOOTH);
+        bgImage = new ImageIcon("assets/StartPage/BG.JPG").getImage(); //1920, 1080
+        playButton = new ImageIcon("assets/StartPage/Play.PNG").getImage().getScaledInstance(670, 310, Image.SCALE_SMOOTH);
+        exitButton = new ImageIcon("assets/StartPage/Exit.PNG").getImage().getScaledInstance(332, 184, Image.SCALE_SMOOTH);
 
         addMouseListener(this);
         setFocusable(true);
@@ -25,13 +25,10 @@ public class MainMenu extends JPanel implements MouseListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        playBounds = new Rectangle(60, getHeight()-255, 300, 155);
-        exitBounds = new Rectangle(getWidth()-200, getHeight()-127, 165, 92);
+        playBounds = new Rectangle(60, getHeight() - 255, 300, 155);
+        exitBounds = new Rectangle(getWidth() - 200, getHeight() - 127, 165, 92);
 
-        // พื้นหลัง
         g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
-
-        // ปุ่ม
         g.drawImage(playButton, playBounds.x, playBounds.y, playBounds.width, playBounds.height, this);
         g.drawImage(exitButton, exitBounds.x, exitBounds.y, exitBounds.width, exitBounds.height, this);
     }
@@ -40,15 +37,12 @@ public class MainMenu extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         Point p = e.getPoint();
         if (playBounds.contains(p)) {
-            // parent.showGamePanel(); // ไปหน้าเล่นเกม
-            System.out.println("กดปุ่ม PLAY แล้ว (ยังไม่เปลี่ยนหน้า)");
-            
+            parent.startGame(); // เรียกเริ่มเกม
         } else if (exitBounds.contains(p)) {
-            System.exit(0); // ปิดโปรแกรม
+            System.exit(0);
         }
     }
 
-    // ส่วนที่เหลือไม่ใช้
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
