@@ -18,7 +18,7 @@ public class BossFightPanel extends JPanel {
         setBackground(Color.DARK_GRAY);
 
         // Heal ก่อนเริ่ม
-        playerStatus.healFull();
+        // playerStatus.healFull();
 
         statusLabel = new JLabel("Prepare to Fight the Demon King!", SwingConstants.CENTER);
         statusLabel.setFont(new Font("Serif", Font.BOLD, 30));
@@ -63,7 +63,7 @@ public class BossFightPanel extends JPanel {
         if (bossHP <= 0) {
             JOptionPane.showMessageDialog(this, "You defeated the Boss!");
             int finalScore = playerStatus.getHp() + playerStatus.getMp();
-            parent.showEndGame(finalScore, true); // ✅ เพิ่ม isWin = true
+            parent.showEndGame(finalScore, true);
             return;
         }
 

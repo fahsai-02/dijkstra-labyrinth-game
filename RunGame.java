@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.util.List;
+import java.awt.*;
 
 public class RunGame extends JFrame {
     private MainMenu mainMenu;
@@ -81,8 +82,23 @@ public class RunGame extends JFrame {
     public int getCurrentStage() {
         return currentStage;
     }
-    
 
+    public void showMainMenu() {
+        getContentPane().removeAll();
+        mainMenu = new MainMenu(this);
+        add(mainMenu);
+        revalidate();
+        repaint();
+    }
+    
+    public void showEndGame(int finalScore, boolean isWin) {
+        getContentPane().removeAll();
+        EndGamePanel endPanel = new EndGamePanel(finalScore, isWin, this);
+        add(endPanel);
+        revalidate();
+        repaint();
+    }
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new RunGame());
     }

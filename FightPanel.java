@@ -125,20 +125,27 @@ public class FightPanel extends JPanel {
     private boolean checkGameOver() {
         if (!playerStatus.isAlive() || monster.getHp() <= 0) {
             String msg;
+    
             if (playerStatus.isAlive()) {
                 msg = "You defeated " + monster.getName() + "!\nGold +" + monster.getRewardGold();
                 playerStatus.gainGold(monster.getRewardGold());
                 parent.getMapPanel().markDefeated(currentNode);
+    
+                JOptionPane.showMessageDialog(this, msg);
+                parent.showMap();
             } else {
                 msg = "You were defeated by " + monster.getName();
+                JOptionPane.showMessageDialog(this, msg);
+    
+                int finalScore = playerStatus.getHp() + playerStatus.getMp();  // หรือคำนวณตามจริง
+                parent.showEndGame(finalScore, false);  // <-- แพ้!
             }
-
-            JOptionPane.showMessageDialog(this, msg);
-            parent.showMap();
+    
             return true;
         }
         return false;
     }
+    
 
     class FightScenePanel extends JPanel {
         private Image playerImage;
