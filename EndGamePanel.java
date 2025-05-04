@@ -6,8 +6,11 @@ public class EndGamePanel extends JPanel {
         setLayout(null); // Absolute layout
         setPreferredSize(new Dimension(1920, 1080));
 
-        // ===== BG Image =====
-        ImageIcon bgIcon = new ImageIcon("assets\\BossFight\\BgWin.JPG");
+        // ===== Choose BG based on win/loss =====
+        String bgPath = isWin 
+            ? "assets\\BossFight\\BgWin.JPG"
+            : "assets\\BossFight\\BgLose.JPG";  //รอใส่ภาพแพ้
+        ImageIcon bgIcon = new ImageIcon(bgPath);
         JLabel bgLabel = new JLabel(bgIcon);
         bgLabel.setBounds(0, 0, 1920, 1080);
         add(bgLabel);

@@ -27,7 +27,6 @@ public class GamePanel extends JPanel implements MouseListener {
         g.setFont(new Font("Serif", Font.BOLD, 22));
 
         int x = 20, y = 40, lineHeight = 50;
-
         g.drawString("HP:  " + playerStatus.getHp(), x + 200, y + 40);
         g.drawString("MP:  " + playerStatus.getMp(), x + 200, y + lineHeight + 40);
         g.drawString("ATK: " + playerStatus.getAtk(), x + 400, y + 40);
@@ -62,7 +61,6 @@ public class GamePanel extends JPanel implements MouseListener {
 
                 if (from < to) {
                     Point p2 = mapData.getNodePosition(to);
-
                     double dx = p2.x - p1.x;
                     double dy = p2.y - p1.y;
                     double length = Math.sqrt(dx * dx + dy * dy);
@@ -138,7 +136,6 @@ public class GamePanel extends JPanel implements MouseListener {
     }
 
     private void deductPlayerEnergy(int distance) {
-        double mpPer10m = 1.0;
         double effectiveDistance = distance / 10.0;
 
         if (playerStatus.hasWingedBoots()) {
@@ -169,6 +166,20 @@ public class GamePanel extends JPanel implements MouseListener {
                     .findFirst()
                     .orElse(0);
 
+                // Check MP before moving
+                double effectiveDistance = weight / 10.0;
+                if (playerStatus.hasWingedBoots()) effectiveDistance *= 0.5;
+                int mpCost = (int) Math.ceil(effectiveDistance);
+
+                if (playerStatus.getMp() < mpCost) {
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(this, "You have no MP left to continue your journey!");
+                        int score = playerStatus.getHp() + playerStatus.getMp();
+                        parent.showEndGame(score, false);
+                    });
+                    return;
+                }
+
                 totalDistance += weight;
                 deductPlayerEnergy(weight);
                 playerNode = to;
@@ -197,7 +208,6 @@ public class GamePanel extends JPanel implements MouseListener {
             }
         }).start();
     }
-
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
