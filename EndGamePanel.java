@@ -1,44 +1,42 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class EndGamePanel extends JPanel {
-    public EndGamePanel(int finalScore, boolean isWin, RunGame runGame) {
-        setLayout(new BorderLayout());
+    public EndGamePanel(int score, boolean isWin, RunGame parent) {
+        setLayout(null); // Absolute layout
+        setPreferredSize(new Dimension(1920, 1080));
 
-        JLabel messageLabel = new JLabel(
-                isWin ? "You win! Great journey so far. Please, it's time to rest." : "You lose, please restart and try again",
-                SwingConstants.CENTER
-        );
-        messageLabel.setFont(new Font("Serif", Font.BOLD, 28));
-        messageLabel.setForeground(isWin ? Color.BLUE : Color.RED);
+        // ===== BG Image =====
+        ImageIcon bgIcon = new ImageIcon("assets\\BossFight\\BgWin.JPG");
+        JLabel bgLabel = new JLabel(bgIcon);
+        bgLabel.setBounds(0, 0, 1920, 1080);
+        add(bgLabel);
 
-        JLabel scoreLabel = new JLabel("Final Score: " + finalScore, SwingConstants.CENTER);
-        scoreLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        // ===== MAIN MENU Button =====
+        JButton mainMenuBtn = createImageButton("assets\\BossFight\\MenuButton.PNG", 600, 750, 300, 80);
+        mainMenuBtn.addActionListener(e -> parent.showMainMenu());
+        add(mainMenuBtn);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
+        // ===== EXIT Button =====
+        JButton exitBtn = createImageButton("assets\\BossFight\\Exit.PNG", 1020, 715, 300, 120);
+        exitBtn.addActionListener(e -> System.exit(0));
+        add(exitBtn);
 
-        JButton menuButton = new JButton("Main Menu");
-        menuButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                runGame.showMainMenu(); 
-            }
-        });
+        // Make buttons appear above BG
+        setComponentZOrder(mainMenuBtn, 0);
+        setComponentZOrder(exitBtn, 0);
+        setComponentZOrder(bgLabel, 2);
+    }
 
-        JButton exitButton = new JButton("Exit");
-        exitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-
-        buttonPanel.add(menuButton);
-        buttonPanel.add(exitButton);
-
-        add(messageLabel, BorderLayout.NORTH);
-        add(scoreLabel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+    private JButton createImageButton(String path, int x, int y, int w, int h) {
+        ImageIcon rawIcon = new ImageIcon(path);
+        Image scaled = rawIcon.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
+        JButton button = new JButton(new ImageIcon(scaled));
+        button.setBounds(x, y, w, h);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setOpaque(false);
+        return button;
     }
 }

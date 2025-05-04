@@ -39,6 +39,13 @@ public class CharacterStatus {
         this.hp = Math.min(this.hp + amount, maxHp);
     }
 
+    public void restoreMP(int amount) {
+        mp += amount;
+        if (mp > maxMp) {
+            mp = maxMp;
+        }
+    }
+    
     public void damage(int amount) {
         int reduced = Math.max(0, amount - def);
         hp = Math.max(0, hp - reduced);

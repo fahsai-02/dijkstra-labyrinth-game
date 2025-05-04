@@ -63,8 +63,12 @@ public class RunGame extends JFrame {
         currentStage++;
     
         int healAmount = (int)(playerStatus.getMaxHp() * 0.2);
+        int mpRestore = (int)(playerStatus.getMaxMp() * 0.3);
         playerStatus.heal(healAmount);
-        JOptionPane.showMessageDialog(this,"You feel refreshed!\nRecovered " + healAmount + " HP.","Healing Bonus", JOptionPane.INFORMATION_MESSAGE);
+        playerStatus.restoreMP(mpRestore);
+        JOptionPane.showMessageDialog(this, "Entering Stage " + currentStage +
+        "\nHP restored: " + healAmount +
+        "\nMP restored: " + mpRestore);
     
         if (currentStage == 2) {
             gamePanel = new GamePanel(MapData.loadMap2(), this, playerStatus);
