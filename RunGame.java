@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.util.List;
-// import java.awt.*;
 
 public class RunGame extends JFrame {
     private MainMenu mainMenu;
@@ -13,7 +12,7 @@ public class RunGame extends JFrame {
 
     public RunGame() {
         setTitle("The Labyrinth - Tower of Trials");
-        setSize(1920, 1080); //1280 800
+        setSize(1920, 1080);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -28,6 +27,7 @@ public class RunGame extends JFrame {
     public void startGame() {
         remove(mainMenu);
         gamePanel = new GamePanel(MapData.loadMap1(), this, playerStatus);
+        gamePanel.resetUndoHistory();
         add(gamePanel);
         revalidate();
         repaint();
@@ -61,15 +61,15 @@ public class RunGame extends JFrame {
     public void nextMap() {
         remove(itemSelection);
         currentStage++;
-    
+
         int healAmount = (int)(playerStatus.getMaxHp() * 0.2);
         int mpRestore = (int)(playerStatus.getMaxMp() * 0.3);
         playerStatus.heal(healAmount);
         playerStatus.restoreMP(mpRestore);
         JOptionPane.showMessageDialog(this, "Entering Stage " + currentStage +
-        "\nHP restored: " + healAmount +
-        "\nMP restored: " + mpRestore);
-    
+            "\nHP restored: " + healAmount +
+            "\nMP restored: " + mpRestore);
+
         if (currentStage == 2) {
             gamePanel = new GamePanel(MapData.loadMap2(), this, playerStatus);
         } else if (currentStage == 3) {
@@ -79,12 +79,13 @@ public class RunGame extends JFrame {
             showBossFight('Z');
             return;
         }
-    
+
+        gamePanel.resetUndoHistory();  // ✅ Reset undo stack for new stage
         add(gamePanel);
         revalidate();
         repaint();
     }
-    
+
     public GamePanel getMapPanel() {
         return gamePanel;
     }
@@ -100,16 +101,15 @@ public class RunGame extends JFrame {
         revalidate();
         repaint();
     }
-    
+
     public void showEndGame(int ignoredScore, boolean isWin) {
-        int totalScore = playerStatus.getTotalScore(); 
+        int totalScore = playerStatus.getTotalScore();
         getContentPane().removeAll();
         EndGamePanel endPanel = new EndGamePanel(totalScore, isWin, this);
         add(endPanel);
         revalidate();
         repaint();
     }
-    
 
     public void showBossFight(char node) {
         if (bossFightPanel == null) {
@@ -130,19 +130,20 @@ public class RunGame extends JFrame {
         } else if (stage == 3) {
             gamePanel = new GamePanel(MapData.loadMap3(), this, playerStatus);
         }
+        gamePanel.resetUndoHistory();  // ✅ Also reset undo when jumping to a stage
         getContentPane().removeAll();
         add(gamePanel);
         revalidate();
         repaint();
     }
-    
+
     public void jumpToBossFight() {
         getContentPane().removeAll();
         add(new BossFightPanel(this, playerStatus));
         revalidate();
         repaint();
     }
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new RunGame());
     }

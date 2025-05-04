@@ -217,6 +217,16 @@ public class GamePanel extends JPanel implements MouseListener {
         }
     }
 
+    public void resetUndoHistory() {
+        moveHistory.clear();
+        mpCostHistory.clear();
+        distanceHistory.clear();
+        undoCount = 0;
+        if (undoLabel != null) {
+            undoLabel.setText("Undo Left: " + (undoLimit - undoCount));
+        }
+    }
+
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
