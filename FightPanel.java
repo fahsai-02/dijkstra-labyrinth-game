@@ -193,6 +193,8 @@ public class FightPanel extends JPanel {
             g.drawRect(100, 160, barW, 20);
             g.drawString("HP: " + playerStatus.getHp() + " / " + playerStatus.getMaxHp(), 470, 140);
             g.drawString("MP: " + playerStatus.getMp() + " / " + playerStatus.getMaxMp(), 470, 175);
+            g.drawString("DEF: " + playerStatus.getDef(), 470, 210);
+
 
             // Monster Status
             g.setColor(Color.WHITE);
@@ -202,6 +204,7 @@ public class FightPanel extends JPanel {
             g.setColor(Color.WHITE);
             g.drawRect(1200, 120, barW, 30);
             g.drawString("HP: " + monster.getHp() + " / " + monster.getMaxHp(), 1570, 145);
+            g.drawString("DEF: " + monster.getDef(), 1570, 185);
         }
     }
 }

@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 public class BossFightPanel extends JPanel {
     private RunGame parent;
@@ -14,7 +13,7 @@ public class BossFightPanel extends JPanel {
     public BossFightPanel(RunGame parent, CharacterStatus player) {
         this.parent = parent;
         this.player = player;
-        this.boss = new BossStatus("TUNG TUNG TUNG SAHUR", 1000, 100, 15, 10);
+        this.boss = new BossStatus("TUNG TUNG TUNG SAHUR", 1000, 100, 30, 10);
 
         setLayout(new BorderLayout());
 
@@ -116,9 +115,8 @@ public class BossFightPanel extends JPanel {
 
             int barMaxW = 300;
 
-            // Clamp bar width so it won't exceed max
             int bossHpBar = (int)(Math.min(boss.getHp(), boss.getMaxHp()) / (double)boss.getMaxHp() * barMaxW);
-            int bossMpBar = (int)(Math.min(boss.getMp(), boss.getMaxMp()) / (double)boss.getMaxMp() * barMaxW);
+            // int bossMpBar = (int)(Math.min(boss.getMp(), boss.getMaxMp()) / (double)boss.getMaxMp() * barMaxW);
             int playerHpBar = (int)(Math.min(player.getHp(), player.getMaxHp()) / (double)player.getMaxHp() * barMaxW);
             int playerMpBar = (int)(Math.min(player.getMp(), player.getMaxMp()) / (double)player.getMaxMp() * barMaxW);
 
@@ -134,11 +132,19 @@ public class BossFightPanel extends JPanel {
             g.drawRect(200, 300, barMaxW, 50);
             g.drawString("HP " + boss.getHp(), 200, 330);
 
-            g.setColor(Color.RED);
-            g.fillRect(200, 370, bossMpBar, 50);
+            g.setColor(Color.GREEN);
+            g.fillRect(200, 300, bossHpBar, 50);
             g.setColor(Color.BLACK);
-            g.drawRect(200, 370, barMaxW, 50);
-            g.drawString("MP " + boss.getMp(), 200, 400);
+            g.drawRect(200, 300, barMaxW, 50);
+            g.drawString("HP " + boss.getHp(), 200, 330);
+            g.setColor(Color.WHITE);
+            g.drawString("DEF " + boss.getDEF(), 200, 390); // <-- ใช้ตำแหน่งเดิมของ MP
+
+            // g.setColor(Color.RED);
+            // g.fillRect(200, 370, bossMpBar, 50);
+            // g.setColor(Color.BLACK);
+            // g.drawRect(200, 370, barMaxW, 50);
+            // g.drawString("MP " + boss.getMp(), 200, 400);
 
             g.setFont(new Font("Serif", Font.BOLD, 24));
             g.setColor(Color.BLACK);
