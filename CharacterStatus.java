@@ -3,7 +3,7 @@ public class CharacterStatus {
     private int mp;
     private int maxHp;
     private int maxMp;
-    private int atk = 200;
+    private int atk = 20;
     private int def = 0;
     private int gold = 0; // เงินของผู้เล่น
 

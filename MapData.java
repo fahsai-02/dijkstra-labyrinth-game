@@ -85,7 +85,6 @@ public class MapData {
     public static MapData loadMap2() {
         MyGraph graph = new MyGraph();
     
-        ////////////////////////////////////////////////////// แก้ด้วย
         graph.addVertex('A', 'S');
         graph.addVertex('B', 'N');
         graph.addVertex('C', 'N');
@@ -94,30 +93,35 @@ public class MapData {
         graph.addVertex('F', 'N');
         graph.addVertex('G', 'N');
         graph.addVertex('H', 'N');
-        graph.addVertex('I', 'N');
+        graph.addVertex('I', 'M');
         graph.addVertex('J', 'M');
         graph.addVertex('K', 'N');
         graph.addVertex('L', 'N');
         graph.addVertex('M', 'N');
-        graph.addVertex('N', 'N');
+        graph.addVertex('N', 'M');
         graph.addVertex('O', 'E');
     
-        ////////////////////////////////////////////////////// แก้ด้วย
-        graph.addEdge('A', 'B', 100);
-        graph.addEdge('B', 'C', 100);
-        graph.addEdge('A', 'D', 100);
-        graph.addEdge('D', 'E', 100);
-        graph.addEdge('E', 'F', 100);
-        graph.addEdge('F', 'G', 100);
-        graph.addEdge('E', 'H', 100);
-        graph.addEdge('H', 'I', 100);
-        graph.addEdge('E', 'J', 100);
-        graph.addEdge('J', 'K', 100);
-        graph.addEdge('K', 'L', 100);
-        graph.addEdge('L', 'M', 100);
-        graph.addEdge('M', 'N', 100);
-        graph.addEdge('N', 'O', 100);
-        graph.addEdge('I', 'O', 100);
+        graph.addEdge('A', 'C', 101);
+        graph.addEdge('A', 'B', 123);
+        graph.addEdge('B', 'D', 116);
+        graph.addEdge('B', 'E', 102);
+        graph.addEdge('B', 'F', 107);
+        graph.addEdge('B', 'H', 101);
+        graph.addEdge('C', 'F', 112);
+        graph.addEdge('C', 'I', 107);
+        graph.addEdge('I', 'H', 134);
+        graph.addEdge('I', 'O', 112);
+        graph.addEdge('I', 'G', 106);
+        graph.addEdge('H', 'J', 142);
+        graph.addEdge('G', 'O', 137);
+        graph.addEdge('J', 'L', 142);
+        graph.addEdge('J', 'K', 108);
+        graph.addEdge('K', 'L', 104);
+        graph.addEdge('K', 'M', 104);
+        graph.addEdge('K', 'N', 108);
+        graph.addEdge('N', 'O', 102);
+        graph.addEdge('K', 'O', 103);
+        
     
         MapData map = new MapData("Map2", "assets/GraphMap/BgLv.png", graph, 'A');
 
@@ -146,56 +150,62 @@ public class MapData {
         return map;
     }
     
-
     public static MapData loadMap3() {
         MyGraph graph = new MyGraph();
     
-        ////////////////////////////////////////////////////// แก้ด้วย
         graph.addVertex('A', 'S');
         graph.addVertex('B', 'N');
-        graph.addVertex('C', 'N');
+        graph.addVertex('C', 'M');
         graph.addVertex('D', 'N');
         graph.addVertex('E', 'N');
         graph.addVertex('F', 'N');
-        graph.addVertex('G', 'N');
+        graph.addVertex('G', 'M');
         graph.addVertex('H', 'N');
         graph.addVertex('I', 'N');
-        graph.addVertex('J', 'N');
-        graph.addVertex('K', 'N');
+        graph.addVertex('J', 'M');
+        graph.addVertex('K', 'M');
         graph.addVertex('L', 'N');
         graph.addVertex('M', 'N');
         graph.addVertex('N', 'N');
-        graph.addVertex('O', 'N');
+        graph.addVertex('O', 'M');
         graph.addVertex('P', 'N');
         graph.addVertex('Q', 'N');
         graph.addVertex('R', 'N');
-        graph.addVertex('T', 'N');
         graph.addVertex('U', 'N');
-        graph.addVertex('V', 'E');
-    
-        ////////////////////////////////////////////////////// แก้ด้วย
-        graph.addEdge('A', 'B', 10);
-        graph.addEdge('B', 'C', 10);
-        graph.addEdge('B', 'D', 10);
-        graph.addEdge('C', 'F', 10);
-        graph.addEdge('D', 'E', 10);
-        graph.addEdge('E', 'F', 10);
-        graph.addEdge('D', 'G', 10);
-        graph.addEdge('G', 'H', 10);
-        graph.addEdge('H', 'I', 10);
-        graph.addEdge('I', 'J', 10);
-        graph.addEdge('J', 'K', 10);
-        graph.addEdge('K', 'T', 10);
-        graph.addEdge('I', 'L', 10);
-        graph.addEdge('L', 'M', 10);
-        graph.addEdge('M', 'N', 10);
-        graph.addEdge('G', 'Q', 10);
-        graph.addEdge('L', 'O', 10);
-        graph.addEdge('O', 'P', 10);
-        graph.addEdge('M', 'R', 10);
-        graph.addEdge('K', 'U', 10);
-        graph.addEdge('B', 'V', 10);
-    
+        graph.addVertex('V', 'N');
+        graph.addVertex('T', 'E');
+
+        graph.addEdge('A', 'V', 155);
+        graph.addEdge('A', 'B', 139);
+        graph.addEdge('A', 'C', 122);
+        graph.addEdge('B', 'D', 172);
+        graph.addEdge('D', 'E', 107);
+        graph.addEdge('E', 'I', 121);
+        graph.addEdge('I', 'H', 142);
+        graph.addEdge('I', 'L', 127);
+        graph.addEdge('I', 'M', 185);
+        graph.addEdge('E', 'J', 148);
+        graph.addEdge('J', 'I', 141);
+        graph.addEdge('J', 'M', 137);
+        graph.addEdge('J', 'K', 130);
+        graph.addEdge('E', 'F', 148);
+        graph.addEdge('F', 'K', 107);
+        graph.addEdge('K', 'M', 103);
+        graph.addEdge('L', 'M', 132);
+        graph.addEdge('M', 'T', 149);
+        graph.addEdge('K', 'N', 200);
+        graph.addEdge('N', 'T', 107);
+        graph.addEdge('L', 'O', 150);
+        graph.addEdge('V', 'G', 118);
+        graph.addEdge('G', 'H', 122);
+        graph.addEdge('H', 'O', 126);
+        graph.addEdge('O', 'P', 101);
+        graph.addEdge('P', 'Q', 177);
+        graph.addEdge('Q', 'O', 156);
+        graph.addEdge('O', 'R', 133);
+        graph.addEdge('O', 'U', 190);
+        graph.addEdge('O', 'T', 156);
+        
         MapData map = new MapData("Map3", "assets/GraphMap/BgLv.png", graph, 'A');
     
         int offsetX = 200, offsetY = 100;

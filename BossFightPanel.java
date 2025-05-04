@@ -41,8 +41,7 @@ public class BossFightPanel extends JPanel {
         canvas.setBounds(0, 0, 1920, 1080);
         layeredPane.add(canvas, JLayeredPane.DEFAULT_LAYER);
 
-        // ปุ่มโจมตีปกติ
-        JButton atkButton = new JButton(new ImageIcon("assets/BossFight/NormalAttack.PNG"));
+        JButton atkButton = new JButton(new ImageIcon("assets\\BossFight\\NormalAttack.PNG"));
         atkButton.setBounds(700, 750, 500, 170);
         atkButton.setBorder(BorderFactory.createEmptyBorder());
         atkButton.setFocusable(false);
@@ -57,8 +56,7 @@ public class BossFightPanel extends JPanel {
         });
         layeredPane.add(atkButton, JLayeredPane.PALETTE_LAYER);
 
-        // ปุ่มสกิลหนัก
-        JButton hardButton = new JButton(new ImageIcon("assets/BossFight/HardAttack.PNG"));
+        JButton hardButton = new JButton(new ImageIcon("assets\\BossFight\\HardAttack.PNG"));
         hardButton.setBounds(1300, 750, 500, 170);
         hardButton.setBorder(BorderFactory.createEmptyBorder());
         hardButton.setFocusable(false);
@@ -118,13 +116,12 @@ public class BossFightPanel extends JPanel {
 
             int barMaxW = 300;
 
-            // Clamp ให้ไม่ล้น
+            // Clamp bar width so it won't exceed max
             int bossHpBar = (int)(Math.min(boss.getHp(), boss.getMaxHp()) / (double)boss.getMaxHp() * barMaxW);
             int bossMpBar = (int)(Math.min(boss.getMp(), boss.getMaxMp()) / (double)boss.getMaxMp() * barMaxW);
             int playerHpBar = (int)(Math.min(player.getHp(), player.getMaxHp()) / (double)player.getMaxHp() * barMaxW);
             int playerMpBar = (int)(Math.min(player.getMp(), player.getMaxMp()) / (double)player.getMaxMp() * barMaxW);
 
-            // Boss Status
             g.setFont(new Font("Serif", Font.BOLD, 36));
             g.setColor(Color.WHITE);
             g.drawString("BOSS", 300, 210);
@@ -143,7 +140,6 @@ public class BossFightPanel extends JPanel {
             g.drawRect(200, 370, barMaxW, 50);
             g.drawString("MP " + boss.getMp(), 200, 400);
 
-            // Player Status
             g.setFont(new Font("Serif", Font.BOLD, 24));
             g.setColor(Color.BLACK);
             g.drawString("Player", 150, 720);
@@ -155,10 +151,10 @@ public class BossFightPanel extends JPanel {
             g.drawString("HP " + player.getHp(), 380, 765);
 
             g.setColor(Color.RED);
-            g.fillRect(380, 790, playerMpBar, 50);
+            g.fillRect(380, 830, playerMpBar, 50);
             g.setColor(Color.BLACK);
-            g.drawRect(380, 790, barMaxW, 50);
-            g.drawString("MP " + player.getMp(), 380, 825);
+            g.drawRect(380, 830, barMaxW, 50);
+            g.drawString("MP " + player.getMp(), 380, 865);
         }
     }
 }
