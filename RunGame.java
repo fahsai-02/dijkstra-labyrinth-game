@@ -62,13 +62,17 @@ public class RunGame extends JFrame {
         remove(itemSelection);
         currentStage++;
     
+        int healAmount = (int)(playerStatus.getMaxHp() * 0.2);
+        playerStatus.heal(healAmount);
+        JOptionPane.showMessageDialog(this,"You feel refreshed!\nRecovered " + healAmount + " HP.","Healing Bonus", JOptionPane.INFORMATION_MESSAGE);
+    
         if (currentStage == 2) {
             gamePanel = new GamePanel(MapData.loadMap2(), this, playerStatus);
         } else if (currentStage == 3) {
             gamePanel = new GamePanel(MapData.loadMap3(), this, playerStatus);
         } else {
             JOptionPane.showMessageDialog(this, "Congratulations! You've cleared all stages!");
-            showBossFight('Z'); // 👈 เพิ่มตรงนี้แทน System.exit(0);
+            showBossFight('Z');
             return;
         }
     
@@ -133,8 +137,6 @@ public class RunGame extends JFrame {
         revalidate();
         repaint();
     }
-    
-    
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new RunGame());

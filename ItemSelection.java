@@ -1,19 +1,16 @@
 import javax.swing.*;
 import java.awt.*;
-// import java.awt.event.*;
 import java.util.List;
 
 public class ItemSelection extends JPanel {
-    private RunGame parent;
     private CharacterStatus player;
     private List<ItemList.Item> items;
     private int pageIndex = 0;
     private JPanel cardPanel;
     private JLayeredPane layeredPane;
-    private JLabel goldLabel;
+    private JLabel goldLabel, statusLabel;
 
     public ItemSelection(RunGame parent, CharacterStatus player, List<ItemList.Item> items) {
-        this.parent = parent;
         this.player = player;
         this.items = items;
 
@@ -58,12 +55,19 @@ public class ItemSelection extends JPanel {
         });
         layeredPane.add(next, JLayeredPane.MODAL_LAYER);
 
-        // Gold Display
-        goldLabel = new JLabel("Gold: " + player.getGold());
+        // Gold label
+        goldLabel = new JLabel();
         goldLabel.setFont(new Font("Arial", Font.BOLD, 26));
         goldLabel.setForeground(new Color(218, 165, 32));
-        goldLabel.setBounds(1600, 30, 300, 40);
+        goldLabel.setBounds(900, 720, 300, 40);
         layeredPane.add(goldLabel, JLayeredPane.MODAL_LAYER);
+
+        // HP / MP label
+        statusLabel = new JLabel();
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        statusLabel.setForeground(Color.WHITE);
+        statusLabel.setBounds(850, 750, 350, 40);
+        layeredPane.add(statusLabel, JLayeredPane.MODAL_LAYER);
 
         add(layeredPane, BorderLayout.CENTER);
 
@@ -91,7 +95,56 @@ public class ItemSelection extends JPanel {
 
         cardPanel.revalidate();
         cardPanel.repaint();
+
         goldLabel.setText("Gold: " + player.getGold());
+        statusLabel.setText("HP: " + player.getHp() + "   MP: " + player.getMp());
+
+        // ===== HP/MP Bar =====
+        layeredPane.add(new StatusBarPanel(player), JLayeredPane.MODAL_LAYER);
+    }
+
+    // แถบ HP/MP
+    class StatusBarPanel extends JPanel {
+        private CharacterStatus player;
+
+        public StatusBarPanel(CharacterStatus player) {
+            this.player = player;
+            setOpaque(false);
+            setBounds(850, 800, 300, 80);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            int barW = 200;
+            int barH = 20;
+        
+            int hp = Math.min(player.getHp(), player.getMaxHp());
+            int maxHp = player.getMaxHp();
+            int mp = Math.min(player.getMp(), player.getMaxMp());
+            int maxMp = player.getMaxMp();
+        
+            int hpWidth = (int)((hp / (double)maxHp) * barW);
+            int mpWidth = (int)((mp / (double)maxMp) * barW);
+        
+            // HP bar
+            g.setColor(Color.DARK_GRAY);
+            g.fillRect(0, 0, barW, barH);
+            g.setColor(Color.RED);
+            g.fillRect(0, 0, hpWidth, barH);
+            g.setColor(Color.BLACK);
+            g.drawRect(0, 0, barW, barH);
+            g.drawString("HP", -30, 15);
+        
+            // MP bar
+            g.setColor(Color.DARK_GRAY);
+            g.fillRect(0, 30, barW, barH);
+            g.setColor(Color.BLUE);
+            g.fillRect(0, 30, mpWidth, barH);
+            g.setColor(Color.BLACK);
+            g.drawRect(0, 30, barW, barH);
+            g.drawString("MP", -30, 45);
+        }
     }
 
     private JPanel createItemCard(ItemList.Item item) {
@@ -169,7 +222,7 @@ public class ItemSelection extends JPanel {
                 player.spendGold(item.basePrice);
                 player.applyItemEffect(item.name, item.effectValue);
                 JOptionPane.showMessageDialog(this, "Purchased: " + item.name);
-                updateCards(); // refresh gold label
+                updateCards(); // refresh labels
             } else {
                 JOptionPane.showMessageDialog(this, "Not enough gold!");
             }

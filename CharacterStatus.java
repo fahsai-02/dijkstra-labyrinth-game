@@ -35,6 +35,10 @@ public class CharacterStatus {
         mp = Math.max(0, mp - actualLoss);
     }
 
+    public void heal(int amount) {
+        this.hp = Math.min(this.hp + amount, maxHp);
+    }
+
     public void damage(int amount) {
         int reduced = Math.max(0, amount - def);
         hp = Math.max(0, hp - reduced);
