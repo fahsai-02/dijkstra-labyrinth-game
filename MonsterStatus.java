@@ -49,20 +49,20 @@ public class MonsterStatus {
     private static final Map<Integer, List<String>> monsterStageMap = new HashMap<>();
 
     static {
-        monsterData.put("Glorbo", new MonsterStatus("Glorbo", 50, 10, 0, 25, "assets/Monster/Glorbo-Frutodrilo.PNG"));
-        monsterData.put("Tralalero", new MonsterStatus("Tralalero", 70, 15, 5, 35,"assets/Monster/Tralalero-Tralala.PNG"));
+        monsterData.put("Glorbo", new MonsterStatus("Glorbo Frutodrilo", 50, 10, 0, 25, "assets/Monster/Glorbo-Frutodrilo.PNG"));
+        monsterData.put("Tralalero", new MonsterStatus("Tralalero Tralala", 70, 15, 5, 35,"assets/Monster/Tralalero-Tralala.PNG"));
 
-        monsterData.put("Shimpanzini", new MonsterStatus("Shimpanzini", 60, 12, 2, 20, "assets/Monster/Shimpanzini-Bananinni.PNG"));
-        monsterData.put("Balerinna", new MonsterStatus("Balerinna", 80, 18, 8, 40, "assets/Monster/Balerinna-Cappuccinna.PNG"));
-        monsterData.put("Fruli", new MonsterStatus("Fruli", 50, 22, 10, 50, "assets/Monster/Fruli-Frulla.PNG"));
+        monsterData.put("Shimpanzini", new MonsterStatus("Shimpanzini Bananinni", 60, 12, 2, 20, "assets/Monster/Shimpanzini-Bananinni.PNG"));
+        monsterData.put("Balerinna", new MonsterStatus("Balerinna Cappuccinna", 80, 18, 8, 40, "assets/Monster/Balerinna-Cappuccinna.PNG"));
+        monsterData.put("Fruli", new MonsterStatus("Fruli Frulla", 50, 22, 10, 50, "assets/Monster/Fruli-Frulla.PNG"));
 
-        monsterData.put("Trulmero", new MonsterStatus("Trulmero", 100, 25, 0, 30, "assets/Monster/Trulmero-Trulicina.PNG"));
-        monsterData.put("Saturno", new MonsterStatus("Saturno", 110, 17, 4, 32 ,"assets/Monster/La-Vaca-Saturno-Saturnita.PNG"));
-        monsterData.put("Cappuccino", new MonsterStatus("Cappuccino", 130, 20, 7, 45, "assets/Monster/Cappuccino-Assasino.PNG"));
-        monsterData.put("Burbaloni", new MonsterStatus("Burbaloni", 140, 23, 12, 60, "assets/Monster/Burbaloni-Lulioli.PNG"));
-        monsterData.put("Brr", new MonsterStatus("Brr", 180, 30, 15, 75, "assets/Monster/Brr-Brr-Patapim.PNG"));
+        monsterData.put("Trulmero", new MonsterStatus("Trulmero Trulicina", 100, 25, 0, 30, "assets/Monster/Trulmero-Trulicina.PNG"));
+        monsterData.put("Saturno", new MonsterStatus("La Vaca Saturno Saturnita", 140, 17, 4, 32 ,"assets/Monster/La-Vaca-Saturno-Saturnita.PNG"));
+        monsterData.put("Cappuccino", new MonsterStatus("Cappuccino Assasino", 130, 20, 7, 45, "assets/Monster/Cappuccino-Assasino.PNG"));
+        monsterData.put("Burbaloni", new MonsterStatus("Burbaloni Lulioli", 110, 23, 12, 60, "assets/Monster/Burbaloni-Lulioli.PNG"));
+        monsterData.put("Brr", new MonsterStatus("Brr Brr Patapim", 180, 30, 15, 75, "assets/Monster/Brr-Brr-Patapim.PNG"));
 
-        monsterData.put("Tung", new MonsterStatus("Tung", 1000, 120, 20, 1000000, "assets/Monster/BOSS.PNG"));
+        monsterData.put("Tung", new MonsterStatus("Tung Tung Tung Sahur", 1000, 120, 20, 1000000, "assets/Monster/BOSS.PNG"));
 
         monsterStageMap.put(1, Arrays.asList("Glorbo", "Tralalero"));
         monsterStageMap.put(2, Arrays.asList("Balerinna", "Fruli", "Shimpanzini"));

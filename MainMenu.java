@@ -5,8 +5,10 @@ import java.awt.event.*;
 public class MainMenu extends JPanel implements MouseListener {
     private Image bgImage;
     private Image playButton;
+    private Image howToButton;
     private Image exitButton;
     private Rectangle playBounds;
+    private Rectangle howToPlayBounds;
     private Rectangle exitBounds;
     private RunGame parent;
 
@@ -15,6 +17,7 @@ public class MainMenu extends JPanel implements MouseListener {
 
         bgImage = new ImageIcon("assets/StartPage/BG.JPG").getImage(); //1920, 1080
         playButton = new ImageIcon("assets/StartPage/Play.PNG").getImage().getScaledInstance(670, 310, Image.SCALE_SMOOTH);
+        howToButton = new ImageIcon("assets/StartPage/Guide.PNG").getImage().getScaledInstance(172, 161, Image.SCALE_SMOOTH);
         exitButton = new ImageIcon("assets/StartPage/Exit.PNG").getImage().getScaledInstance(332, 184, Image.SCALE_SMOOTH);
 
         addMouseListener(this);
@@ -26,10 +29,12 @@ public class MainMenu extends JPanel implements MouseListener {
         super.paintComponent(g);
 
         playBounds = new Rectangle(60, getHeight() - 255, 300, 155);
+        howToPlayBounds = new Rectangle(350, getHeight() - 210, 75, 75);
         exitBounds = new Rectangle(getWidth() - 200, getHeight() - 127, 165, 92);
 
         g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
         g.drawImage(playButton, playBounds.x, playBounds.y, playBounds.width, playBounds.height, this);
+        g.drawImage(howToButton, howToPlayBounds.x, howToPlayBounds.y, howToPlayBounds.width, howToPlayBounds.height, this);
         g.drawImage(exitButton, exitBounds.x, exitBounds.y, exitBounds.width, exitBounds.height, this);
     }
 
@@ -40,6 +45,8 @@ public class MainMenu extends JPanel implements MouseListener {
             parent.startGame(); // เรียกเริ่มเกม
         } else if (exitBounds.contains(p)) {
             System.exit(0);
+        } else if (howToPlayBounds.contains(p)) {
+            parent.showHowToPlay();
         }
     }
 

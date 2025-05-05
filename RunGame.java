@@ -3,6 +3,7 @@ import java.util.List;
 
 public class RunGame extends JFrame {
     private MainMenu mainMenu;
+    private HowToPlayPanel howToPlayPanel;
     private GamePanel gamePanel;
     private FightPanel fightPanel;
     private ItemSelection itemSelection;
@@ -20,7 +21,8 @@ public class RunGame extends JFrame {
 
         mainMenu = new MainMenu(this);
         add(mainMenu);
-
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        // setUndecorated(true);          
         setVisible(true);
     }
 
@@ -29,6 +31,21 @@ public class RunGame extends JFrame {
         gamePanel = new GamePanel(MapData.loadMap1(), this, playerStatus);
         gamePanel.resetUndoHistory();
         add(gamePanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showHowToPlay() {
+        remove(mainMenu); // หรือ remove(gamePanel) แล้วแต่คุณอยู่หน้าไหน
+        howToPlayPanel = new HowToPlayPanel(this);
+        add(howToPlayPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void returnToMainMenu() {
+        remove(howToPlayPanel);
+        add(mainMenu);
         revalidate();
         repaint();
     }
@@ -80,7 +97,7 @@ public class RunGame extends JFrame {
             return;
         }
 
-        gamePanel.resetUndoHistory();  // ✅ Reset undo stack for new stage
+        gamePanel.resetUndoHistory();  
         add(gamePanel);
         revalidate();
         repaint();
@@ -130,7 +147,7 @@ public class RunGame extends JFrame {
         } else if (stage == 3) {
             gamePanel = new GamePanel(MapData.loadMap3(), this, playerStatus);
         }
-        gamePanel.resetUndoHistory();  // ✅ Also reset undo when jumping to a stage
+        gamePanel.resetUndoHistory(); 
         getContentPane().removeAll();
         add(gamePanel);
         revalidate();
