@@ -58,10 +58,10 @@ public class GamePanel extends JPanel implements MouseListener {
     private void drawPlayerStatus(Graphics g) {
         g.setColor(Color.white);
         g.setFont(new Font("Serif", Font.BOLD, 22));
-        g.drawString("HP:  " + playerStatus.getHp(), 220, 80);
-        g.drawString("MP:  " + playerStatus.getMp(), 220, 130);
-        g.drawString("ATK: " + playerStatus.getAtk(), 420, 80);
-        g.drawString("DEF: " + playerStatus.getDef(), 420, 130);
+        g.drawString("HP:  " + playerStatus.getHp(), 150, 60);
+        g.drawString("MP:  " + playerStatus.getMp(), 150, 100);
+        g.drawString("ATK: " + playerStatus.getAtk(), 270, 60);
+        g.drawString("DEF: " + playerStatus.getDef(), 270, 100);
     }
 
     @Override
@@ -143,17 +143,22 @@ public class GamePanel extends JPanel implements MouseListener {
     private void deductPlayerEnergy(int distance) {
         double effectiveDistance = distance / 10.0;
         if (playerStatus.hasWingedBoots()) effectiveDistance *= 0.5;
-        int mpLoss = (int) Math.ceil(effectiveDistance);
+    
+        int mpCost = (int) Math.ceil(effectiveDistance);
         int currentMp = playerStatus.getMp();
-
-        if (currentMp >= mpLoss) {
-            playerStatus.loseMP(mpLoss);
+    
+        if (currentMp >= mpCost) {
+            playerStatus.loseMP(mpCost);
         } else {
-            int overflow = mpLoss - currentMp;
-            playerStatus.loseMP(currentMp);
-            playerStatus.loseHP(overflow);
+            int mpShort = mpCost - currentMp;
+            playerStatus.loseMP(currentMp); // หมดเกลี้ยง
+    
+            // หัก HP แทน: ทุกๆ 20 ระยะที่เกิน หัก 1 HP
+            int hpLoss = (int) Math.ceil((mpShort * 10.0) / 20.0);
+            playerStatus.loseHP(hpLoss);
         }
     }
+    
 
     private void moveAlongPath(java.util.List<Character> path) {
         new Thread(() -> {
@@ -184,7 +189,7 @@ public class GamePanel extends JPanel implements MouseListener {
                 totalDistance += weight;
                 deductPlayerEnergy(weight);
                 playerNode = to;
-                repaint();
+                repaint();                
 
                 try { Thread.sleep(400); } catch (InterruptedException ignored) {}
 
@@ -194,8 +199,7 @@ public class GamePanel extends JPanel implements MouseListener {
                     return;
                 } else if (node.typeNode == 'E') {
                     int shortest = mapData.graph.shortest(mapData.getStartNode(), playerNode);
-                    int lost = Math.max(0, totalDistance - shortest);
-                    int score = Math.max(0, 1000 - (lost * 3));
+                    int score = ScoreCalculator.calculateStageScore(shortest, totalDistance, 1000);
                     playerStatus.addScore(score);
                     JOptionPane.showMessageDialog(this, "Stage Complete!\nShortest path: " + shortest +
                             "\nYour path: " + totalDistance + "\nScore: " + score + " / 1000");

@@ -12,7 +12,7 @@ public class ScoreCalculator {
         if (shortestPath <= 0 || playerPath <= 0) return 0;
 
         int extraDistance = Math.max(0, playerPath - shortestPath);
-        int penalty = extraDistance * 3;
+        int penalty = extraDistance;
 
         return Math.max(0, maxScore - penalty);
     }

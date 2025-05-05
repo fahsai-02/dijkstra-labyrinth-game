@@ -109,6 +109,17 @@ public class RunGame extends JFrame {
         });
     }
 
+    public void resetGame() {
+        this.playerStatus = new CharacterStatus(150, 100); // หรือค่าที่กำหนด
+        this.currentStage = 1;
+        this.mainMenu = new MainMenu(this);
+        this.bossFightPanel = null;
+        this.fightPanel = null;
+        this.itemSelection = null;
+        this.gamePanel = null;
+        showMainMenu();
+    }
+
     public void showEndGame(int ignoredScore, boolean isWin) {
         int totalScore = playerStatus.getTotalScore();
         switchPanel(() -> new EndGamePanel(totalScore, isWin, this));

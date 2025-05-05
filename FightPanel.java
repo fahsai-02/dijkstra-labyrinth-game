@@ -89,7 +89,7 @@ public class FightPanel extends JPanel {
 
         try {
             Image raw = new ImageIcon(monster.getImagePath()).getImage();
-            monsterImage = raw.getScaledInstance(500, 350, Image.SCALE_SMOOTH);
+            monsterImage = raw.getScaledInstance(600, 420, Image.SCALE_SMOOTH);
         } catch (Exception e) {
             monsterImage = null;
         }
@@ -112,21 +112,26 @@ public class FightPanel extends JPanel {
     private void botTurn() {
         turnLabel.setText("Monster's Turn - Thinking...");
         canvas.repaint();
-
-        new Timer(1000, _ -> {
+    
+        Timer attackTimer = new Timer(1000, _ -> {
             playerStatus.damage(monster.getAtk());
             turnLabel.setText(monster.getName() + " attacks!");
             canvas.repaint();
-
+    
             if (!checkGameOver()) {
-                new Timer(1000, _2 -> {
+                Timer endTurnTimer = new Timer(1000, _ -> {
                     turnLabel.setText("Player's Turn");
                     isPlayerTurn = true;
                     canvas.repaint();
-                }).start();
+                });
+                endTurnTimer.setRepeats(false);
+                endTurnTimer.start();
             }
-        }).start();
-    }
+        });
+    
+        attackTimer.setRepeats(false); 
+        attackTimer.start();
+    }    
 
     private boolean gameEnded = false;
     private boolean checkGameOver() {
@@ -158,49 +163,54 @@ public class FightPanel extends JPanel {
             super.paintComponent(g);
             int w = getWidth(), h = getHeight();
 
+            Color hpMonster = new Color(150, 28, 28);
+            Color hpColor = new Color(55, 125,75);
+            Color mpColor = new Color(54,124,171);
+
             if (bgImage != null) g.drawImage(bgImage, 0, 0, w, h, this);
 
             // Monster Info
             if (monster != null) {
                 g.setFont(new Font("Arial", Font.BOLD, 26));
                 g.setColor(Color.WHITE);
-                g.drawString(monster.getName(), 100, 80);
+                g.drawString(monster.getName(), 275, 250);
 
                 int barW = 200;
                 int mHPBar = (monster.getHp() * barW) / monster.getMaxHp();
-                g.setColor(new Color(0, 128, 0));
-                g.fillRect(100, 100, mHPBar, 25);
+                g.setColor(hpMonster);
+                g.fillRect(275, 280, mHPBar, 25);
                 g.setColor(Color.BLACK);
-                g.drawRect(100, 100, barW, 25);
+                g.drawRect(275, 280, barW, 25);
                 g.setColor(Color.WHITE);
-                g.drawString("HP: " + monster.getHp(), 100 + barW + 10, 120);
+                g.drawString("HP: " + monster.getHp(), 275 + barW + 10, 300);
             }
 
             // Player bars
-            int barX = 60, barY = h - 120;
-            g.setColor(new Color(0, 160, 100));
-            g.fillRect(barX, barY, playerStatus.getHp() * 100 / playerStatus.getMaxHp(), 20);
-            g.setColor(Color.BLACK);
-            g.drawRect(barX, barY, 100, 20);
-            g.drawString("HP: " + playerStatus.getHp(), barX + 110, barY + 15);
+            int barX = 250, barY = h - 145;
 
-            g.setColor(Color.RED);
-            g.fillRect(barX, barY + 30, playerStatus.getMp() * 100 / playerStatus.getMaxMp(), 20);
+            g.setColor(hpColor);
+            g.fillRect(barX, barY, playerStatus.getHp() * 200 / playerStatus.getMaxHp(), 30);
             g.setColor(Color.BLACK);
-            g.drawRect(barX, barY + 30, 100, 20);
-            g.drawString("MP: " + playerStatus.getMp(), barX + 110, barY + 45);
+            g.drawRect(barX, barY, 200, 30);
+            g.drawString("HP: " + playerStatus.getHp(), barX + 210, barY + 20);
+
+            g.setColor(mpColor);
+            g.fillRect(barX, barY + 40, playerStatus.getMp() * 200 / playerStatus.getMaxMp(), 30);
+            g.setColor(Color.BLACK);
+            g.drawRect(barX, barY + 40, 200, 30);
+            g.drawString("MP: " + playerStatus.getMp(), barX + 210, barY + 65);
 
             // Monster Image
             if (monsterImage != null)
-                g.drawImage(monsterImage, w / 2 - 250, h / 4, this);
+                g.drawImage(monsterImage, w / 2-70 , 50, this);
 
             // Buttons
             int normalX = w / 2 +50;
             int hardX = normalX+270;
             int btnY = h - 180;
 
-            normalBtnBounds = new Rectangle(normalX, btnY, 180, 80);
-            hardBtnBounds = new Rectangle(hardX, btnY, 180, 80);
+            normalBtnBounds = new Rectangle(normalX, btnY, 270, 120);
+            hardBtnBounds = new Rectangle(hardX, btnY, 270, 120);
 
             if (normalBtnImg != null)
                 g.drawImage(normalBtnImg, normalX, btnY, 270, 120, this);

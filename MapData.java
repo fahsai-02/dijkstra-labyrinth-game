@@ -125,23 +125,22 @@ public class MapData {
     
         MapData map = new MapData("Map2", "assets/GraphMap/BgLv.png", graph, 'A');
 
-        int offsetX = 200, offsetY = 100;
-        map.setNodePosition('A', 120 + offsetX, 540 - offsetY);
-        map.setNodePosition('B', 380 + offsetX, 500 - offsetY);
-        map.setNodePosition('C', 380 + offsetX, 700 - offsetY);
-        map.setNodePosition('D', 240 + offsetX, 270 - offsetY);
-        map.setNodePosition('E', 600 + offsetX, 270 - offsetY);
-        map.setNodePosition('F', 600 + offsetX, 600 - offsetY);
-        map.setNodePosition('G', 600 + offsetX, 950 - offsetY);
-        map.setNodePosition('H', 800 + offsetX, 500 - offsetY);
-        map.setNodePosition('I', 800 + offsetX, 850 - offsetY);
-        map.setNodePosition('J', 960 + offsetX, 270 - offsetY);
-        map.setNodePosition('K', 960 + offsetX, 570 - offsetY);
-        map.setNodePosition('L', 1250 + offsetX, 300 - offsetY);
-        map.setNodePosition('M', 1500 + offsetX, 570 - offsetY);
-        map.setNodePosition('N', 1250 + offsetX, 900 - offsetY);
-        map.setNodePosition('O', 960 + offsetX, 950 - offsetY);
-    
+        map.setNodePosition('A', 100, 450);
+        map.setNodePosition('B', 250, 400);
+        map.setNodePosition('C', 250, 600);
+        map.setNodePosition('D', 150, 200);
+        map.setNodePosition('E', 400, 200);
+        map.setNodePosition('F', 400, 500);
+        map.setNodePosition('G', 400, 650);
+        map.setNodePosition('H', 550, 400);
+        map.setNodePosition('I', 550, 600);
+        map.setNodePosition('J', 700, 200);
+        map.setNodePosition('K', 700, 450);
+        map.setNodePosition('L', 900, 250);
+        map.setNodePosition('M', 1100, 450);
+        map.setNodePosition('N', 900, 600);
+        map.setNodePosition('O', 700, 650);
+        
         map.setNodeImage('S', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
         map.setNodeImage('E', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
         map.setNodeImage('N', new ImageIcon("assets/GraphMap/General.PNG").getImage());
@@ -207,30 +206,31 @@ public class MapData {
         graph.addEdge('O', 'T', 156);
         
         MapData map = new MapData("Map3", "assets/GraphMap/BgLv.png", graph, 'A');
-    
-        int offsetX = 200, offsetY = 100;
-    
-        map.setNodePosition('A', 120 + offsetX, 540 - offsetY);
-        map.setNodePosition('B', 360 + offsetX, 500 - offsetY);
-        map.setNodePosition('C', 360 + offsetX, 700 - offsetY);
-        map.setNodePosition('D', 480 + offsetX, 500 - offsetY);
-        map.setNodePosition('E', 480 + offsetX, 650 - offsetY);
-        map.setNodePosition('F', 480 + offsetX, 900 - offsetY);
-        map.setNodePosition('G', 600 + offsetX, 300 - offsetY);
-        map.setNodePosition('H', 720 + offsetX, 300 - offsetY);
-        map.setNodePosition('I', 720 + offsetX, 520 - offsetY);
-        map.setNodePosition('J', 720 + offsetX, 700 - offsetY);
-        map.setNodePosition('K', 720 + offsetX, 930 - offsetY);
-        map.setNodePosition('L', 840 + offsetX, 520 - offsetY);
-        map.setNodePosition('M', 840 + offsetX, 650 - offsetY);
-        map.setNodePosition('N', 840 + offsetX, 900 - offsetY);
-        map.setNodePosition('O', 1080 + offsetX, 400 - offsetY);
-        map.setNodePosition('P', 1200 + offsetX, 250 - offsetY);
-        map.setNodePosition('Q', 860 + offsetX, 250 - offsetY);
-        map.setNodePosition('R', 1080 + offsetX, 700 - offsetY);
-        map.setNodePosition('T', 1200 + offsetX, 900 - offsetY);
-        map.setNodePosition('U', 1200 + offsetX, 500 - offsetY);
-        map.setNodePosition('V', 360 + offsetX, 300 - offsetY);
+        
+        int offsetX = 50, offsetY = 50;
+
+        map.setNodePosition('A', 100 + offsetX, 300 + offsetY);
+        map.setNodePosition('B', 230 + offsetX, 200 + offsetY);
+        map.setNodePosition('C', 200 + offsetX, 400 + offsetY);
+        map.setNodePosition('D', 350 + offsetX, 150 + offsetY);
+        map.setNodePosition('E', 500 + offsetX, 150 + offsetY);
+        map.setNodePosition('F', 500 + offsetX, 300 + offsetY);
+        map.setNodePosition('G', 150 + offsetX, 500 + offsetY);
+        map.setNodePosition('H', 300 + offsetX, 500 + offsetY);
+        map.setNodePosition('I', 500 + offsetX, 250 + offsetY);
+        map.setNodePosition('J', 650 + offsetX, 150 + offsetY);
+        map.setNodePosition('K', 650 + offsetX, 300 + offsetY);
+        map.setNodePosition('L', 500 + offsetX, 400 + offsetY);
+        map.setNodePosition('M', 700 + offsetX, 250 + offsetY);
+        map.setNodePosition('N', 800 + offsetX, 350 + offsetY);
+        map.setNodePosition('O', 400 + offsetX, 500 + offsetY);
+        map.setNodePosition('P', 550 + offsetX, 550 + offsetY);
+        map.setNodePosition('Q', 700 + offsetX, 550 + offsetY);
+        map.setNodePosition('R', 300 + offsetX, 600 + offsetY);
+        map.setNodePosition('T', 900 + offsetX, 250 + offsetY);
+        map.setNodePosition('U', 250 + offsetX, 650 + offsetY);
+        map.setNodePosition('V', 50 + offsetX, 200 + offsetY);
+
     
         map.setNodeImage('S', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
         map.setNodeImage('E', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
