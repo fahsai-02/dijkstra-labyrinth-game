@@ -3,7 +3,7 @@ import java.util.List;
 
 public class RunGame extends JFrame {
     private MainMenu mainMenu;
-    private HowToPlayPanel howToPlayPanel;
+    // private HowToPlayPanel howToPlayPanel;
     private GamePanel gamePanel;
     private FightPanel fightPanel;
     private ItemSelection itemSelection;
@@ -13,79 +13,72 @@ public class RunGame extends JFrame {
 
     public RunGame() {
         setTitle("The Labyrinth - Tower of Trials");
-        setSize(1920, 1080);
+        setSize(1280, 720);                 
+        setMinimumSize(new java.awt.Dimension(960, 600));
+        setLocationRelativeTo(null);       
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
+    
         playerStatus = new CharacterStatus(150, 100);
-
         mainMenu = new MainMenu(this);
         add(mainMenu);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        // setUndecorated(true);          
+    
         setVisible(true);
+        setResizable(false);
     }
+    
 
     public void startGame() {
-        remove(mainMenu);
-        gamePanel = new GamePanel(MapData.loadMap1(), this, playerStatus);
-        gamePanel.resetUndoHistory();
-        add(gamePanel);
-        revalidate();
-        repaint();
+        switchPanel(() -> {
+            gamePanel = new GamePanel(MapData.loadMap1(), this, playerStatus);
+            gamePanel.resetUndoHistory();
+            return gamePanel;
+        });
     }
 
     public void showHowToPlay() {
-        remove(mainMenu); // หรือ remove(gamePanel) แล้วแต่คุณอยู่หน้าไหน
-        howToPlayPanel = new HowToPlayPanel(this);
-        add(howToPlayPanel);
-        revalidate();
-        repaint();
+        switchPanel(() -> new HowToPlayPanel(this));
     }
 
     public void returnToMainMenu() {
-        remove(howToPlayPanel);
-        add(mainMenu);
-        revalidate();
-        repaint();
+        switchPanel(() -> {
+            mainMenu = new MainMenu(this);
+            return mainMenu;
+        });
     }
 
     public void showFightPanel(char node) {
-        remove(gamePanel);
-        fightPanel = new FightPanel(this, playerStatus);
-        fightPanel.startFight(node);
-        add(fightPanel);
-        revalidate();
-        repaint();
+        switchPanel(() -> {
+            fightPanel = new FightPanel(this, playerStatus);
+            fightPanel.startFight(node);
+            return fightPanel;
+        });
     }
 
     public void showMap() {
-        remove(fightPanel);
-        add(gamePanel);
-        revalidate();
-        repaint();
+        switchPanel(() -> gamePanel);
     }
 
     public void showShop() {
-        remove(gamePanel);
-        List<ItemList.Item> items = ItemList.getAllItems(currentStage);
-        itemSelection = new ItemSelection(this, playerStatus, items);
-        add(itemSelection);
-        revalidate();
-        repaint();
+        switchPanel(() -> {
+            List<ItemList.Item> items = ItemList.getAllItems(currentStage);
+            itemSelection = new ItemSelection(this, playerStatus, items);
+            return itemSelection;
+        });
     }
 
     public void nextMap() {
         remove(itemSelection);
         currentStage++;
 
-        int healAmount = (int)(playerStatus.getMaxHp() * 0.2);
-        int mpRestore = (int)(playerStatus.getMaxMp() * 0.3);
+        int healAmount = (int) (playerStatus.getMaxHp() * 0.2);
+        int mpRestore = (int) (playerStatus.getMaxMp() * 0.3);
         playerStatus.heal(healAmount);
         playerStatus.restoreMP(mpRestore);
-        JOptionPane.showMessageDialog(this, "Entering Stage " + currentStage +
-            "\nHP restored: " + healAmount +
-            "\nMP restored: " + mpRestore);
+
+        JOptionPane.showMessageDialog(this,
+                "Entering Stage " + currentStage +
+                        "\nHP restored: " + healAmount +
+                        "\nMP restored: " + mpRestore);
 
         if (currentStage == 2) {
             gamePanel = new GamePanel(MapData.loadMap2(), this, playerStatus);
@@ -97,10 +90,8 @@ public class RunGame extends JFrame {
             return;
         }
 
-        gamePanel.resetUndoHistory();  
-        add(gamePanel);
-        revalidate();
-        repaint();
+        gamePanel.resetUndoHistory();
+        switchPanel(() -> gamePanel);
     }
 
     public GamePanel getMapPanel() {
@@ -112,34 +103,27 @@ public class RunGame extends JFrame {
     }
 
     public void showMainMenu() {
-        getContentPane().removeAll();
-        mainMenu = new MainMenu(this);
-        add(mainMenu);
-        revalidate();
-        repaint();
+        switchPanel(() -> {
+            mainMenu = new MainMenu(this);
+            return mainMenu;
+        });
     }
 
     public void showEndGame(int ignoredScore, boolean isWin) {
         int totalScore = playerStatus.getTotalScore();
-        getContentPane().removeAll();
-        EndGamePanel endPanel = new EndGamePanel(totalScore, isWin, this);
-        add(endPanel);
-        revalidate();
-        repaint();
+        switchPanel(() -> new EndGamePanel(totalScore, isWin, this));
     }
 
     public void showBossFight(char node) {
         if (bossFightPanel == null) {
             bossFightPanel = new BossFightPanel(this, playerStatus);
         }
-        remove(gamePanel);
-        add(bossFightPanel);
-        revalidate();
-        repaint();
+        switchPanel(() -> bossFightPanel);
     }
 
     public void jumpToStage(int stage) {
         currentStage = stage;
+
         if (stage == 1) {
             gamePanel = new GamePanel(MapData.loadMap1(), this, playerStatus);
         } else if (stage == 2) {
@@ -147,18 +131,26 @@ public class RunGame extends JFrame {
         } else if (stage == 3) {
             gamePanel = new GamePanel(MapData.loadMap3(), this, playerStatus);
         }
-        gamePanel.resetUndoHistory(); 
-        getContentPane().removeAll();
-        add(gamePanel);
-        revalidate();
-        repaint();
+
+        gamePanel.resetUndoHistory();
+        switchPanel(() -> gamePanel);
     }
 
     public void jumpToBossFight() {
+        bossFightPanel = new BossFightPanel(this, playerStatus);
+        switchPanel(() -> bossFightPanel);
+    }
+
+    private void switchPanel(PanelSupplier supplier) {
         getContentPane().removeAll();
-        add(new BossFightPanel(this, playerStatus));
+        add(supplier.get());
         revalidate();
         repaint();
+
+    }
+
+    private interface PanelSupplier {
+        JPanel get();
     }
 
     public static void main(String[] args) {

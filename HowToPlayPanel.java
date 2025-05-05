@@ -3,26 +3,39 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class HowToPlayPanel extends JPanel {
-    private Image backButtonImage;
-    private RunGame parent;
-    private Rectangle backButton;
     private Image bgImage;
+    private RunGame parent;
+    private JButton backButton;
 
     public HowToPlayPanel(RunGame parent) {
         this.parent = parent;
+        setLayout(null); // ใช้ absolute layout สำหรับ back button
+
+        // โหลดพื้นหลัง
         try {
             bgImage = new ImageIcon("assets/StartPage/BgGuide.JPG").getImage();
-            backButtonImage = new ImageIcon("assets/StartPage/Undo.PNG").getImage(); // รูปปุ่ม
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Can't load how-to-play or back button image");
+            JOptionPane.showMessageDialog(this, "Error loading HowToPlay background");
         }
-        
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (backButton.contains(e.getPoint())) {
-                    parent.returnToMainMenu();
-                }
+
+        // ปุ่ม Back
+        backButton = new JButton(new ImageIcon(
+                new ImageIcon("assets/StartPage/Undo.PNG")
+                        .getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH)
+        ));
+        backButton.setBorderPainted(false);
+        backButton.setContentAreaFilled(false);
+        backButton.setFocusPainted(false);
+        backButton.setOpaque(false);
+
+        backButton.addActionListener(_ -> parent.returnToMainMenu());
+        add(backButton);
+
+        // ปรับตำแหน่งปุ่มเมื่อหน้าต่าง resize
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                int padding = 60;
+                backButton.setBounds(padding, padding, 200, 100);
             }
         });
     }
@@ -33,12 +46,6 @@ public class HowToPlayPanel extends JPanel {
         if (bgImage != null) {
             g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
         }
-
-        backButton = new Rectangle(70, getHeight()-150, 75, 75);
-
-        if (backButtonImage != null) {
-            g.drawImage(backButtonImage, backButton.x, backButton.y, backButton.width, backButton.height, this);
-        }
+        backButton.setBounds(15, getHeight()-175, 200, 100);
     }
-
 }

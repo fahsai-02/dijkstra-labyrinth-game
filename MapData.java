@@ -64,15 +64,15 @@ public class MapData {
 
         MapData map = new MapData("Map1", "assets/GraphMap/BgLv.png", graph, 'S');
 
-        map.setNodePosition('S', 150, 400);
-        map.setNodePosition('A', 300, 400);
-        map.setNodePosition('B', 300, 650);
-        map.setNodePosition('C', 500, 500);
-        map.setNodePosition('D', 700, 400);
-        map.setNodePosition('E', 900, 250);
-        map.setNodePosition('F', 800, 650);
-        map.setNodePosition('G', 1000, 500);
-        map.setNodePosition('Z', 1200, 650);
+        map.setNodePosition('S', 150, 350);
+        map.setNodePosition('A', 300, 350);
+        map.setNodePosition('B', 300, 600);
+        map.setNodePosition('C', 500, 450);
+        map.setNodePosition('D', 700, 350);
+        map.setNodePosition('E', 900, 200);
+        map.setNodePosition('F', 800, 600);
+        map.setNodePosition('G', 1000, 450);
+        map.setNodePosition('Z', 1200, 600);
 
         map.setNodeImage('S', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
         map.setNodeImage('E', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());

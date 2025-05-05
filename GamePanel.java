@@ -20,6 +20,8 @@ public class GamePanel extends JPanel implements MouseListener {
     private final int undoLimit = 5;
     private JLabel undoLabel;
 
+    private JButton backBtn;
+
     public GamePanel(MapData mapData, RunGame parent, CharacterStatus playerStatus) {
         this.mapData = mapData;
         this.playerNode = mapData.playerStartNode;
@@ -27,21 +29,30 @@ public class GamePanel extends JPanel implements MouseListener {
         this.parent = parent;
         this.playerStatus = playerStatus;
 
-        addMouseListener(this);
         setFocusable(true);
         setLayout(null);
+        addMouseListener(this);
 
-        JButton backBtn = new JButton("Undo Move");
+        // === Undo Button ===
+        backBtn = new JButton("Undo Move");
         backBtn.setFont(new Font("Arial", Font.BOLD, 18));
         backBtn.setBounds(50, 900, 150, 40);
         backBtn.addActionListener(e -> undoMove());
         add(backBtn);
 
+        // === Undo Label ===
         undoLabel = new JLabel("Undo Left: " + (undoLimit - undoCount));
         undoLabel.setFont(new Font("Arial", Font.BOLD, 18));
         undoLabel.setForeground(Color.WHITE);
         undoLabel.setBounds(220, 900, 200, 40);
         add(undoLabel);
+
+        // Optional: resize component if needed
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                repaint();
+            }
+        });
     }
 
     private void drawPlayerStatus(Graphics g) {
@@ -56,7 +67,9 @@ public class GamePanel extends JPanel implements MouseListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
         g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+
         drawEdges(g);
         drawNodes(g);
         drawPlayer(g);
@@ -96,8 +109,6 @@ public class GamePanel extends JPanel implements MouseListener {
                 g.setColor(Color.GRAY);
                 g.fillOval(p.x - 20, p.y - 20, 40, 40);
             }
-            // g.setColor(Color.WHITE);
-            // g.drawString(String.valueOf(nodeName), p.x - 5, p.y + 5);
         }
     }
 

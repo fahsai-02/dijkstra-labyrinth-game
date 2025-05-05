@@ -1,53 +1,72 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class EndGamePanel extends JPanel {
+    private RunGame parent;
+    private Image background;
+    private Rectangle mainMenuBounds, exitBounds;
+    private Image menuImg, exitImg;
+
+    private boolean isWin;
+    private int score;
+
     public EndGamePanel(int score, boolean isWin, RunGame parent) {
-        setLayout(null); // Absolute layout
-        setPreferredSize(new Dimension(1920, 1080));
+        this.score = score;
+        this.isWin = isWin;
+        this.parent = parent;
 
-        // ===== Choose BG based on win/loss =====
-        String bgPath = isWin 
-            ? "assets\\BossFight\\BgWin.JPG"
-            : "assets\\BossFight\\BgLose.JPG";  //รอใส่ภาพแพ้
-        ImageIcon bgIcon = new ImageIcon(bgPath);
-        JLabel bgLabel = new JLabel(bgIcon);
-        bgLabel.setBounds(0, 0, 1920, 1080);
-        add(bgLabel);
+        try {
+            String path = isWin ? "assets/BossFight/BgWin.JPG" : "assets/BossFight/BgLose.JPG";
+            background = new ImageIcon(path).getImage();
 
-        // ===== FINAL SCORE =====
-        JLabel scoreLabel = new JLabel("Final Score: " + score + " / 3000", SwingConstants.CENTER);
-        scoreLabel.setFont(new Font("Arial", Font.BOLD, 40));
-        scoreLabel.setForeground(Color.WHITE);
-        scoreLabel.setBounds(560, 250, 800, 60);
-        add(scoreLabel);
+            menuImg = new ImageIcon("assets/BossFight/MenuButton.PNG").getImage()
+                    .getScaledInstance(300, 80, Image.SCALE_SMOOTH);
+            exitImg = new ImageIcon("assets/BossFight/Exit.PNG").getImage()
+                    .getScaledInstance(300, 120, Image.SCALE_SMOOTH);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error loading end screen images");
+        }
 
-        // ===== MAIN MENU Button =====
-        JButton mainMenuBtn = createImageButton("assets\\BossFight\\MenuButton.PNG", 600, 750, 300, 80);
-        mainMenuBtn.addActionListener(e -> parent.showMainMenu());
-        add(mainMenuBtn);
-
-        // ===== EXIT Button =====
-        JButton exitBtn = createImageButton("assets\\BossFight\\Exit.PNG", 1020, 715, 300, 120);
-        exitBtn.addActionListener(e -> System.exit(0));
-        add(exitBtn);
-
-        // ===== Layering =====
-        setComponentZOrder(scoreLabel, 0);
-        setComponentZOrder(mainMenuBtn, 1);
-        setComponentZOrder(exitBtn, 2);
-        setComponentZOrder(bgLabel, 3);
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Point p = e.getPoint();
+                if (mainMenuBounds != null && mainMenuBounds.contains(p)) {
+                    parent.showMainMenu();
+                } else if (exitBounds != null && exitBounds.contains(p)) {
+                    System.exit(0);
+                }
+            }
+        });
     }
 
-    private JButton createImageButton(String path, int x, int y, int w, int h) {
-        ImageIcon rawIcon = new ImageIcon(path);
-        Image scaled = rawIcon.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
-        JButton button = new JButton(new ImageIcon(scaled));
-        button.setBounds(x, y, w, h);
-        button.setBorderPainted(false);
-        button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
-        button.setOpaque(false);
-        return button;
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        int w = getWidth();
+        int h = getHeight();
+
+        // BG
+        if (background != null)
+            g.drawImage(background, 0, 0, w, h, this);
+
+        // Final score
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.setColor(Color.WHITE);
+        g.drawString("Final Score: " + score + " / 3000", w / 2 - 250, h / 3);
+
+        // Buttons
+        int btnW = 300, btnH1 = 80, btnH2 = 120;
+        int menuX = w / 2 - 350;
+        int exitX = w / 2 + 50;
+        int btnY = h - 200;
+
+        mainMenuBounds = new Rectangle(menuX, btnY, btnW, btnH1);
+        exitBounds = new Rectangle(exitX, btnY, btnW, btnH2);
+
+        if (menuImg != null) g.drawImage(menuImg, menuX, btnY, this);
+        if (exitImg != null) g.drawImage(exitImg, exitX, btnY, this);
     }
 }
