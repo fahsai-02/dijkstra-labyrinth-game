@@ -113,13 +113,13 @@ public class FightPanel extends JPanel {
         turnLabel.setText("Monster's Turn - Thinking...");
         canvas.repaint();
     
-        Timer attackTimer = new Timer(1000, _ -> {
+        Timer attackTimer = new Timer(1000, e -> {
             playerStatus.damage(monster.getAtk());
             turnLabel.setText(monster.getName() + " attacks!");
             canvas.repaint();
     
             if (!checkGameOver()) {
-                Timer endTurnTimer = new Timer(1000, _ -> {
+                Timer endTurnTimer = new Timer(1000, k -> {
                     turnLabel.setText("Player's Turn");
                     isPlayerTurn = true;
                     canvas.repaint();

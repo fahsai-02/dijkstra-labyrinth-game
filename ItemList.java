@@ -58,7 +58,7 @@ public class ItemList {
 
     private static void addItemToStage(int stage, Item item) {
         allItems.put(item.getName(), item);
-        stageItemMap.computeIfAbsent(stage, _ -> new ArrayList<>()).add(item);
+        stageItemMap.computeIfAbsent(stage, e -> new ArrayList<>()).add(item);
     }
 
     public static List<Item> getAllItems(int stage) {

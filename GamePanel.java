@@ -109,6 +109,8 @@ public class GamePanel extends JPanel implements MouseListener {
                 g.setColor(Color.GRAY);
                 g.fillOval(p.x - 20, p.y - 20, 40, 40);
             }
+            g.setColor(Color.WHITE);
+            g.drawString(String.valueOf(nodeName), p.x - 5, p.y + 5);
         }
     }
 
@@ -165,34 +167,36 @@ public class GamePanel extends JPanel implements MouseListener {
             for (int i = 1; i < path.size(); i++) {
                 char from = path.get(i - 1);
                 char to = path.get(i);
-
+    
                 int weight = mapData.graph.graph.adjL.get(from).neighbors.stream()
                         .filter(n -> n.nameNeighbor == to).map(n -> n.weight).findFirst().orElse(0);
-
+    
                 double effectiveDistance = weight / 10.0;
                 if (playerStatus.hasWingedBoots()) effectiveDistance *= 0.5;
                 int mpCost = (int) Math.ceil(effectiveDistance);
-
-                if (playerStatus.getMp() < mpCost) {
+    
+                moveHistory.push(from);
+                mpCostHistory.push(mpCost);
+                distanceHistory.push(weight);
+    
+                totalDistance += weight;
+                deductPlayerEnergy(weight);
+    
+                // ❗ ถ้า HP หมด = Game Over
+                if (playerStatus.getHp() <= 0) {
                     SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(this, "You have no MP left to continue your journey!");
+                        JOptionPane.showMessageDialog(this, "You ran out of energy and collapsed!");
                         int score = playerStatus.getHp() + playerStatus.getMp();
                         parent.showEndGame(score, false);
                     });
                     return;
                 }
-
-                moveHistory.push(from);
-                mpCostHistory.push(mpCost);
-                distanceHistory.push(weight);
-
-                totalDistance += weight;
-                deductPlayerEnergy(weight);
+    
                 playerNode = to;
-                repaint();                
-
+                repaint();
+    
                 try { Thread.sleep(400); } catch (InterruptedException ignored) {}
-
+    
                 NodeInfo node = mapData.graph.graph.adjL.get(playerNode);
                 if (node.typeNode == 'M') {
                     SwingUtilities.invokeLater(() -> parent.showFightPanel(playerNode));
@@ -209,6 +213,7 @@ public class GamePanel extends JPanel implements MouseListener {
             }
         }).start();
     }
+    
 
     private void undoMove() {
         if (undoCount >= undoLimit) {

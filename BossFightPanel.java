@@ -4,34 +4,35 @@ import java.awt.event.*;
 
 public class BossFightPanel extends JPanel {
     private RunGame parent;
-    private CharacterStatus player;
-    private BossStatus boss;
+    private CharacterStatus playerStatus;
+    private MonsterStatus boss;
 
-    private Image bgImage, bossImage, playerUI, bossUI;
+    private Image bgImage, bossImage;
+    private Image normalBtnImg, hardBtnImg;
+    private Rectangle normalBtnBounds, hardBtnBounds;
+
     private JLabel turnLabel;
     private boolean isPlayerTurn = true;
-
+    private boolean gameEnded = false;
     private BossFightCanvas canvas;
 
-    public BossFightPanel(RunGame parent, CharacterStatus player) {
+    public BossFightPanel(RunGame parent, CharacterStatus playerStatus) {
         this.parent = parent;
-        this.player = player;
-        this.gameEnded = false;
-        this.boss = new BossStatus("TUNG TUNG TUNG SAHUR", 1000, 100, 30, 10);
+        this.playerStatus = playerStatus;
+        this.boss = MonsterStatus.getMonster("Tung", 3); // ✅ Load boss
 
-        setLayout(new BorderLayout());
-
-        // === Load images ===
         try {
             bgImage = new ImageIcon("assets/BossFight/BgBoss.JPG").getImage();
-            bossImage = new ImageIcon("assets/BossFight/BOSS.PNG").getImage();
-            playerUI = new ImageIcon("assets/BossFight/StatusPlayer.PNG").getImage();
-            bossUI = new ImageIcon("assets/BossFight/StatusBoss.PNG").getImage();
+            bossImage = new ImageIcon(boss.getImagePath()).getImage();
+            normalBtnImg = new ImageIcon("assets/Monster/buttons/NormalAttack.PNG").getImage();
+            hardBtnImg = new ImageIcon("assets/Monster/buttons/HardAttack.PNG").getImage();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error loading boss fight images.");
         }
 
-        // === Turn Label ===
+        setLayout(new BorderLayout());
+
+        // Turn Label
         turnLabel = new JLabel("PLAYER'S TURN", SwingConstants.CENTER);
         turnLabel.setFont(new Font("Serif", Font.BOLD, 32));
         turnLabel.setOpaque(true);
@@ -39,13 +40,39 @@ public class BossFightPanel extends JPanel {
         turnLabel.setForeground(Color.WHITE);
         add(turnLabel, BorderLayout.NORTH);
 
-        // === LayeredPane ===
+        // Canvas
         JLayeredPane layeredPane = new JLayeredPane();
         add(layeredPane, BorderLayout.CENTER);
 
         canvas = new BossFightCanvas();
-        canvas.setBounds(0, 0, 1920, 1080); // Will be resized
+        canvas.setBounds(0, 0, 1920, 1080);
         layeredPane.add(canvas, JLayeredPane.DEFAULT_LAYER);
+
+        canvas.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                Point p = e.getPoint();
+                if (!isPlayerTurn || gameEnded) return;
+
+                if (normalBtnBounds != null && normalBtnBounds.contains(p)) {
+                    boss.reduceHp(playerStatus.getAtk());
+                    isPlayerTurn = false;
+                    canvas.repaint();
+                    checkGameEnd();
+                    if (boss.getHp() > 0) enemyTurn();
+                } else if (hardBtnBounds != null && hardBtnBounds.contains(p)) {
+                    if (playerStatus.getMp() >= 15) {
+                        boss.reduceHp(playerStatus.getAtk() + 15);
+                        playerStatus.loseMP(15);
+                        isPlayerTurn = false;
+                        canvas.repaint();
+                        checkGameEnd();
+                        if (boss.getHp() > 0) enemyTurn();
+                    } else {
+                        JOptionPane.showMessageDialog(BossFightPanel.this, "Not enough MP!");
+                    }
+                }
+            }
+        });
 
         layeredPane.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -53,54 +80,12 @@ public class BossFightPanel extends JPanel {
                 canvas.repaint();
             }
         });
-
-        // === Buttons ===
-        JButton atkButton = createButton("assets/BossFight/NormalAttack.PNG", e -> {
-            if (isPlayerTurn) {
-                boss.takeDamage(player.getAtk());
-                isPlayerTurn = false;
-                canvas.repaint();
-                checkGameEnd();
-                if (!boss.isDefeated()) enemyTurn();
-            }
-        });
-
-        JButton hardButton = createButton("assets/BossFight/HardAttack.PNG", e -> {
-            if (isPlayerTurn && player.getMp() >= 15) {
-                boss.takeDamage(player.getAtk() + 15);
-                player.loseMP(15);
-                isPlayerTurn = false;
-                canvas.repaint();
-                checkGameEnd();
-                if (!boss.isDefeated()) enemyTurn();
-            } else if (isPlayerTurn) {
-                JOptionPane.showMessageDialog(this, "Not enough MP!");
-            }
-        });
-
-        atkButton.setBounds(600, 750, 300, 80);
-        hardButton.setBounds(950, 750, 300, 80);
-
-        layeredPane.add(atkButton, JLayeredPane.PALETTE_LAYER);
-        layeredPane.add(hardButton, JLayeredPane.PALETTE_LAYER);
-    }
-
-    private JButton createButton(String path, ActionListener action) {
-        ImageIcon raw = new ImageIcon(path);
-        Image scaled = raw.getImage().getScaledInstance(300, 80, Image.SCALE_SMOOTH);
-        JButton button = new JButton(new ImageIcon(scaled));
-        button.setBorderPainted(false);
-        button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
-        button.setOpaque(false);
-        button.addActionListener(action);
-        return button;
     }
 
     private void enemyTurn() {
         Timer t = new Timer(1000, e -> {
             turnLabel.setText("BOSS'S TURN");
-            player.damage(boss.getATK());
+            playerStatus.damage(boss.getAtk());
             canvas.repaint();
             isPlayerTurn = true;
             checkGameEnd();
@@ -110,18 +95,17 @@ public class BossFightPanel extends JPanel {
         t.start();
     }
 
-    private boolean gameEnded = false;
     private void checkGameEnd() {
         if (gameEnded) return;
-    
-        if (!player.isAlive()) {
+
+        if (!playerStatus.isAlive()) {
             gameEnded = true;
             JOptionPane.showMessageDialog(this, "You were defeated by the BOSS!");
             parent.showEndGame(0, false);
-        } else if (boss.isDefeated()) {
+        } else if (boss.getHp() <= 0) {
             gameEnded = true;
             JOptionPane.showMessageDialog(this, "You defeated the BOSS!");
-            parent.showEndGame(player.getHp() + player.getMp(), true);
+            parent.showEndGame(playerStatus.getHp() + playerStatus.getMp(), true);
         }
     }
 
@@ -135,49 +119,52 @@ public class BossFightPanel extends JPanel {
             super.paintComponent(g);
             int w = getWidth(), h = getHeight();
 
-            if (bgImage != null) g.drawImage(bgImage, 0, 0, w, h, this);
-            if (bossImage != null) g.drawImage(bossImage, w / 2 - 300, 0, 600, 400, this);
-            if (playerUI != null) g.drawImage(playerUI, 0, h - 250, w, 250, this);
-            if (bossUI != null) g.drawImage(bossUI, 50, 50, 400, 200, this);
+            Color hpMonster = new Color(150, 28, 28);
+            Color hpColor = new Color(55, 125, 75);
+            Color mpColor = new Color(54, 124, 171);
 
-            int barMaxW = 300;
+            g.drawImage(bgImage, 0, 0, w, h, this);
+            g.drawImage(bossImage, w / 2 - 300, 0, 600, 400, this);
 
-            // BOSS Status
-            int bossHpBar = (int)(Math.min(boss.getHp(), boss.getMaxHp()) * barMaxW / (double)boss.getMaxHp());
-
+            // Boss HP Bar
+            int bossHpBar = boss.getHp() * 300 / boss.getMaxHp();
+            g.setColor(hpMonster);
+            g.fillRect(150, 160, bossHpBar, 30);
+            g.setColor(Color.BLACK);
+            g.drawRect(150, 160, 300, 30);
+            g.setColor(Color.WHITE);
             g.setFont(new Font("Serif", Font.BOLD, 28));
-            g.setColor(Color.WHITE);
-            g.drawString("BOSS", 200, 90);
+            g.drawString(boss.getName(), 160, 140);
             g.setFont(new Font("Serif", Font.PLAIN, 22));
-            g.drawString(boss.getName(), 160, 120);
+            g.drawString("HP: " + boss.getHp(), 160, 180);
+            g.drawString("DEF: " + boss.getDef(), 160, 220);
 
-            g.setColor(Color.GREEN);
-            g.fillRect(150, 140, bossHpBar, 30);
+            // Player HP/MP
+            int barX = 250, barY = h - 145;
+            g.setColor(hpColor);
+            g.fillRect(barX, barY, playerStatus.getHp() * 200 / playerStatus.getMaxHp(), 30);
             g.setColor(Color.BLACK);
-            g.drawRect(150, 140, barMaxW, 30);
-            g.drawString("HP: " + boss.getHp(), 150, 170);
-            g.setColor(Color.WHITE);
-            g.drawString("DEF: " + boss.getDEF(), 150, 200);
+            g.drawRect(barX, barY, 200, 30);
+            g.drawString("HP: " + playerStatus.getHp(), barX + 210, barY + 20);
 
-            // PLAYER Status
-            int playerHpBar = (int)(Math.min(player.getHp(), player.getMaxHp()) * barMaxW / (double)player.getMaxHp());
-            int playerMpBar = (int)(Math.min(player.getMp(), player.getMaxMp()) * barMaxW / (double)player.getMaxMp());
-
-            g.setFont(new Font("Serif", Font.BOLD, 24));
+            g.setColor(mpColor);
+            g.fillRect(barX, barY + 40, playerStatus.getMp() * 200 / playerStatus.getMaxMp(), 30);
             g.setColor(Color.BLACK);
-            g.drawString("Player", 150, h - 180);
+            g.drawRect(barX, barY + 40, 200, 30);
+            g.drawString("MP: " + playerStatus.getMp(), barX + 210, barY + 65);
 
-            g.setColor(Color.GREEN);
-            g.fillRect(300, h - 180, playerHpBar, 30);
-            g.setColor(Color.BLACK);
-            g.drawRect(300, h - 180, barMaxW, 30);
-            g.drawString("HP: " + player.getHp(), 300, h - 150);
+            // Draw buttons
+            int btnY = h - 180;
+            int normalX = w / 2 + 50;
+            int hardX = normalX + 270;
 
-            g.setColor(Color.RED);
-            g.fillRect(300, h - 120, playerMpBar, 30);
-            g.setColor(Color.BLACK);
-            g.drawRect(300, h - 120, barMaxW, 30);
-            g.drawString("MP: " + player.getMp(), 300, h - 90);
+            normalBtnBounds = new Rectangle(normalX, btnY, 270, 120);
+            hardBtnBounds = new Rectangle(hardX, btnY, 270, 120);
+
+            if (normalBtnImg != null)
+                g.drawImage(normalBtnImg, normalX, btnY, 270, 120, this);
+            if (hardBtnImg != null)
+                g.drawImage(hardBtnImg, hardX, btnY, 270, 120, this);
         }
     }
 }

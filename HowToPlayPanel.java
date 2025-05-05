@@ -28,7 +28,7 @@ public class HowToPlayPanel extends JPanel {
         backButton.setFocusPainted(false);
         backButton.setOpaque(false);
 
-        backButton.addActionListener(_ -> parent.returnToMainMenu());
+        backButton.addActionListener(e -> parent.returnToMainMenu());
         add(backButton);
 
         // ปรับตำแหน่งปุ่มเมื่อหน้าต่าง resize

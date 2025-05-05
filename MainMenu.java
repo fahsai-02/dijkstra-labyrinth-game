@@ -25,7 +25,7 @@ public class MainMenu extends JPanel implements MouseListener {
             howToButtonImg = new ImageIcon("assets/StartPage/Guide.PNG").getImage()
                     .getScaledInstance(172, 161, Image.SCALE_SMOOTH);
             exitButtonImg = new ImageIcon("assets/StartPage/Exit.PNG").getImage()
-                    .getScaledInstance(332, 184, Image.SCALE_SMOOTH);
+                    .getScaledInstance(250, 150, Image.SCALE_SMOOTH);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error loading images");
         }
@@ -48,7 +48,7 @@ public class MainMenu extends JPanel implements MouseListener {
         // Define Bounds
         playButtonBounds = new Rectangle(60, h - 255, 300, 155);
         howToButtonBounds = new Rectangle(350, h - 210, 75, 75);
-        exitButtonBounds = new Rectangle(w - 200, h - 127, 165, 92);
+        exitButtonBounds = new Rectangle(w - 160, h - 70, 130, 40);
 
         // Draw Buttons
         if (playButtonImg != null)
