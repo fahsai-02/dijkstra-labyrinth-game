@@ -66,13 +66,13 @@ public class MapData {
 
         map.setNodePosition('S', 150, 350);
         map.setNodePosition('A', 300, 350);
-        map.setNodePosition('B', 300, 600);
-        map.setNodePosition('C', 500, 450);
-        map.setNodePosition('D', 700, 350);
+        map.setNodePosition('B', 450, 540);
+        map.setNodePosition('C', 600, 400);
+        map.setNodePosition('D', 750, 275);
         map.setNodePosition('E', 900, 200);
-        map.setNodePosition('F', 800, 600);
-        map.setNodePosition('G', 1000, 450);
-        map.setNodePosition('Z', 1200, 600);
+        map.setNodePosition('F', 750, 420);
+        map.setNodePosition('G', 960, 370);
+        map.setNodePosition('Z', 1000, 540);
 
         map.setNodeImage('S', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
         map.setNodeImage('E', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
@@ -125,21 +125,21 @@ public class MapData {
     
         MapData map = new MapData("Map2", "assets/GraphMap/BgLv.png", graph, 'A');
 
-        map.setNodePosition('A', 100, 450);
-        map.setNodePosition('B', 250, 400);
-        map.setNodePosition('C', 250, 600);
-        map.setNodePosition('D', 150, 200);
-        map.setNodePosition('E', 400, 200);
-        map.setNodePosition('F', 400, 500);
-        map.setNodePosition('G', 400, 650);
-        map.setNodePosition('H', 550, 400);
-        map.setNodePosition('I', 550, 600);
-        map.setNodePosition('J', 700, 200);
-        map.setNodePosition('K', 700, 450);
-        map.setNodePosition('L', 900, 250);
-        map.setNodePosition('M', 1100, 450);
-        map.setNodePosition('N', 900, 600);
-        map.setNodePosition('O', 700, 650);
+        map.setNodePosition('A', 150, 430);
+        map.setNodePosition('B', 300, 360);
+        map.setNodePosition('C', 300, 530);
+        map.setNodePosition('D', 300, 180);
+        map.setNodePosition('E', 450, 180);
+        map.setNodePosition('F', 450, 430);
+        map.setNodePosition('G', 450, 630);
+        map.setNodePosition('H', 600, 360);
+        map.setNodePosition('I', 600, 530);
+        map.setNodePosition('J', 750, 180);
+        map.setNodePosition('K', 750, 430);
+        map.setNodePosition('L', 950, 180);
+        map.setNodePosition('M', 1100, 430);
+        map.setNodePosition('N', 950, 530);
+        map.setNodePosition('O', 750, 630);
         
         map.setNodeImage('S', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
         map.setNodeImage('E', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
@@ -152,7 +152,9 @@ public class MapData {
     public static MapData loadMap3() {
         MyGraph graph = new MyGraph();
     
+        // เพิ่มจุดทั้งหมดพร้อมประเภท (S=Start, E=End, M=Monster, N=Normal)
         graph.addVertex('A', 'S');
+        graph.addVertex('T', 'E');
         graph.addVertex('B', 'N');
         graph.addVertex('C', 'M');
         graph.addVertex('D', 'N');
@@ -169,76 +171,70 @@ public class MapData {
         graph.addVertex('O', 'M');
         graph.addVertex('P', 'N');
         graph.addVertex('Q', 'N');
+        graph.addVertex('U', 'M');
         graph.addVertex('R', 'N');
-        graph.addVertex('U', 'N');
-        graph.addVertex('V', 'N');
-        graph.addVertex('T', 'E');
-
-        graph.addEdge('A', 'V', 155);
-        graph.addEdge('A', 'B', 139);
-        graph.addEdge('A', 'C', 122);
-        graph.addEdge('B', 'D', 172);
-        graph.addEdge('D', 'E', 107);
-        graph.addEdge('E', 'I', 121);
-        graph.addEdge('I', 'H', 142);
-        graph.addEdge('I', 'L', 127);
-        graph.addEdge('I', 'M', 185);
-        graph.addEdge('E', 'J', 148);
-        graph.addEdge('J', 'I', 141);
-        graph.addEdge('J', 'M', 137);
-        graph.addEdge('J', 'K', 130);
-        graph.addEdge('E', 'F', 148);
-        graph.addEdge('F', 'K', 107);
-        graph.addEdge('K', 'M', 103);
-        graph.addEdge('L', 'M', 132);
-        graph.addEdge('M', 'T', 149);
-        graph.addEdge('K', 'N', 200);
-        graph.addEdge('N', 'T', 107);
-        graph.addEdge('L', 'O', 150);
-        graph.addEdge('V', 'G', 118);
-        graph.addEdge('G', 'H', 122);
-        graph.addEdge('H', 'O', 126);
-        graph.addEdge('O', 'P', 101);
-        graph.addEdge('P', 'Q', 177);
-        graph.addEdge('Q', 'O', 156);
-        graph.addEdge('O', 'R', 133);
-        graph.addEdge('O', 'U', 190);
-        graph.addEdge('O', 'T', 156);
-        
-        MapData map = new MapData("Map3", "assets/GraphMap/BgLv.png", graph, 'A');
-        
-        int offsetX = 50, offsetY = 50;
-
-        map.setNodePosition('A', 100 + offsetX, 300 + offsetY);
-        map.setNodePosition('B', 230 + offsetX, 200 + offsetY);
-        map.setNodePosition('C', 200 + offsetX, 400 + offsetY);
-        map.setNodePosition('D', 350 + offsetX, 150 + offsetY);
-        map.setNodePosition('E', 500 + offsetX, 150 + offsetY);
-        map.setNodePosition('F', 500 + offsetX, 300 + offsetY);
-        map.setNodePosition('G', 150 + offsetX, 500 + offsetY);
-        map.setNodePosition('H', 300 + offsetX, 500 + offsetY);
-        map.setNodePosition('I', 500 + offsetX, 250 + offsetY);
-        map.setNodePosition('J', 650 + offsetX, 150 + offsetY);
-        map.setNodePosition('K', 650 + offsetX, 300 + offsetY);
-        map.setNodePosition('L', 500 + offsetX, 400 + offsetY);
-        map.setNodePosition('M', 700 + offsetX, 250 + offsetY);
-        map.setNodePosition('N', 800 + offsetX, 350 + offsetY);
-        map.setNodePosition('O', 400 + offsetX, 500 + offsetY);
-        map.setNodePosition('P', 550 + offsetX, 550 + offsetY);
-        map.setNodePosition('Q', 700 + offsetX, 550 + offsetY);
-        map.setNodePosition('R', 300 + offsetX, 600 + offsetY);
-        map.setNodePosition('T', 900 + offsetX, 250 + offsetY);
-        map.setNodePosition('U', 250 + offsetX, 650 + offsetY);
-        map.setNodePosition('V', 50 + offsetX, 200 + offsetY);
-
+        graph.addVertex('S', 'N');
     
+        // เพิ่มเส้นทางและระยะทางแบบสุ่มตามที่กำหนด (100–300 เมตร)
+        graph.addEdge('A', 'B', 296);
+        graph.addEdge('A', 'C', 114);
+        graph.addEdge('A', 'I', 186);
+        graph.addEdge('B', 'D', 233);
+        graph.addEdge('C', 'G', 60);
+        graph.addEdge('D', 'E', 232);
+        graph.addEdge('E', 'F', 122);
+        graph.addEdge('F', 'T', 267);
+        graph.addEdge('G', 'H', 152);
+        graph.addEdge('H', 'K', 188);
+        graph.addEdge('H', 'O', 213);
+        graph.addEdge('I', 'J', 285);
+        graph.addEdge('J', 'L', 206);
+        graph.addEdge('K', 'T', 290);
+        graph.addEdge('L', 'M', 154);
+        graph.addEdge('M', 'N', 215);
+        graph.addEdge('N', 'T', 174);
+        graph.addEdge('O', 'P', 225);
+        graph.addEdge('O', 'U', 253);
+        graph.addEdge('P', 'Q', 122);
+        graph.addEdge('Q', 'T', 186);
+        graph.addEdge('U', 'R', 226);
+        graph.addEdge('L', 'E', 56);
+        graph.addEdge('R', 'S', 201);
+        graph.addEdge('B', 'H', 172);
+        graph.addEdge('S', 'T', 179);
+    
+        MapData map = new MapData("Map3", "assets/GraphMap/BgLv.png", graph, 'A');
+    
+        // ตำแหน่งของ node (ค่าประมาณตาม layout ใหม่)
+        int offsetX = 100, offsetY = 100;
+        map.setNodePosition('A', 75 + offsetX, 300 + offsetY);
+        map.setNodePosition('B', 300 + offsetX, 200 + offsetY);
+        map.setNodePosition('C', 225 + offsetX, 350 + offsetY);
+        map.setNodePosition('D', 500 + offsetX, 200 + offsetY);
+        map.setNodePosition('E', 650 + offsetX, 175 + offsetY);
+        map.setNodePosition('F', 800 + offsetX, 200 + offsetY);
+        map.setNodePosition('G', 375 + offsetX, 350 + offsetY);
+        map.setNodePosition('H', 550 + offsetX, 300 + offsetY);
+        map.setNodePosition('I', 175 + offsetX, 125 + offsetY);
+        map.setNodePosition('J', 350 + offsetX, 75 + offsetY);
+        map.setNodePosition('K', 775 + offsetX, 300 + offsetY);
+        map.setNodePosition('L', 525 + offsetX, 75 + offsetY);
+        map.setNodePosition('M', 700 + offsetX, 100 + offsetY);
+        map.setNodePosition('N', 900 + offsetX, 150 + offsetY);
+        map.setNodePosition('O', 470 + offsetX, 450 + offsetY);
+        map.setNodePosition('P', 675 + offsetX, 400 + offsetY);
+        map.setNodePosition('Q', 875 + offsetX, 400 + offsetY);
+        map.setNodePosition('R', 800 + offsetX, 500 + offsetY);
+        map.setNodePosition('S', 950 + offsetX, 450 + offsetY);
+        map.setNodePosition('T', 1000 + offsetX, 250 + offsetY);
+        map.setNodePosition('U', 650 + offsetX, 500 + offsetY);
+    
+        // ใส่ไอคอนให้แต่ละประเภทห้อง
         map.setNodeImage('S', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
         map.setNodeImage('E', new ImageIcon("assets/GraphMap/StartAndEnd.PNG").getImage());
         map.setNodeImage('N', new ImageIcon("assets/GraphMap/General.PNG").getImage());
         map.setNodeImage('M', new ImageIcon("assets/GraphMap/MonsterRoom.PNG").getImage());
-        map.setNodeImage('X', new ImageIcon("assets/GraphMap/BossRoom.PNG").getImage());
     
         return map;
     }
-    
 }

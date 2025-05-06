@@ -18,7 +18,7 @@ public class RunGame extends JFrame {
         setLocationRelativeTo(null);       
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     
-        playerStatus = new CharacterStatus(150, 100);
+        playerStatus = new CharacterStatus(150, 250);
         mainMenu = new MainMenu(this);
         add(mainMenu);
     
@@ -70,8 +70,8 @@ public class RunGame extends JFrame {
         remove(itemSelection);
         currentStage++;
 
-        int healAmount = (int) (playerStatus.getMaxHp() * 0.2);
-        int mpRestore = (int) (playerStatus.getMaxMp() * 0.3);
+        int healAmount = (int) (playerStatus.getMaxHp() * 0.25);
+        int mpRestore = (int) (playerStatus.getMaxMp() * 0.5);
         playerStatus.heal(healAmount);
         playerStatus.restoreMP(mpRestore);
 
@@ -110,7 +110,7 @@ public class RunGame extends JFrame {
     }
 
     public void resetGame() {
-        this.playerStatus = new CharacterStatus(150, 100); // หรือค่าที่กำหนด
+        this.playerStatus = new CharacterStatus(150, 250); // หรือค่าที่กำหนด
         this.currentStage = 1;
         this.mainMenu = new MainMenu(this);
         this.bossFightPanel = null;
