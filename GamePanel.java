@@ -136,8 +136,8 @@ public class GamePanel extends JPanel implements MouseListener {
                 g.setColor(Color.GRAY);
                 g.fillOval(p.x - 20, p.y - 20, 40, 40);
             }
-            g.setColor(Color.WHITE);
-            g.drawString(String.valueOf(nodeName), p.x - 5, p.y + 5);
+            // g.setColor(Color.WHITE);
+            // g.drawString(String.valueOf(nodeName), p.x - 5, p.y + 5);
         }
     }
 
